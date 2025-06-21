@@ -8,5 +8,6 @@ import java.lang.annotation.*;
 @Inherited
 public @interface DynamicHot {
     // 可定义注解的属性（可选）
-    String value() default "";
+    String tableName();
+    String id();
 }
