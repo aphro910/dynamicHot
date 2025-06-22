@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHot.aspect;
+package com.kuma.tools.dynamicHot.aop;
 
 
 import java.lang.annotation.*;

@@ -1,6 +1,7 @@
-package com.kuma.tools.dynamicHot.aop;
+package com.kuma.tools.dynamicHot.aspect;
 
-import com.kuma.tools.dynamicHot.aspect.DynamicHot;
+import com.kuma.tools.dynamicHot.aop.DynamicHot;
+import com.kuma.tools.dynamicHot.context.HotKeyContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
@@ -19,7 +20,7 @@ public class HotKeyDetect {
     private final ExpressionParser parser = new SpelExpressionParser();
 
     //环绕通知
-    @Around("@annotation(com.kuma.tools.dynamicHot.aspect.DynamicHot)")
+    @Around("@annotation(com.kuma.tools.dynamicHot.aop.DynamicHot)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         // 1. 获取注解信息
         DynamicHot dynamicHot = getDynamicHotAnnotation(joinPoint);
@@ -30,8 +31,10 @@ public class HotKeyDetect {
         String dynamicKey = parseSpelExpression(joinPoint, spelExpression);
 
         System.out.println("表名: " + tableName + ", 动态键: " + dynamicKey);
+        //todo 判断是否是hotkey
         Object ret =  joinPoint.proceed();
-        System.out.println("环绕后通知");
+        String key = tableName+"_"+dynamicKey;
+        record(key);
         return ret;
     }
 
@@ -60,6 +63,10 @@ public class HotKeyDetect {
         // 解析表达式
         Expression exp = parser.parseExpression(expression);
         return exp.getValue(context, String.class);
+    }
+
+    private void record(String key) {
+        HotKeyContext.hotKeyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
     }
 
 }
