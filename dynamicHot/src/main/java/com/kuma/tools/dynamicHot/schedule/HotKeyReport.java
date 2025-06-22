@@ -7,6 +7,7 @@ import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class HotKeyReport {
@@ -16,6 +17,9 @@ public class HotKeyReport {
 
     @Scheduled(initialDelay = 5000, fixedRate = 5000)
     public void report() {
+        HotKeyContext.flag = 1;
         mqNotify.report(HotKeyContext.hotKeyMap);
+        HotKeyContext.hotKeyMap = new ConcurrentHashMap<>();
+        HotKeyContext.flag = 0;
     }
 }

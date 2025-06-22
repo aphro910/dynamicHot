@@ -66,6 +66,13 @@ public class HotKeyDetect {
     }
 
     private void record(String key) {
+        while (HotKeyContext.flag == 1) {
+            try {
+                Thread.sleep(100);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         HotKeyContext.hotKeyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
     }
 
