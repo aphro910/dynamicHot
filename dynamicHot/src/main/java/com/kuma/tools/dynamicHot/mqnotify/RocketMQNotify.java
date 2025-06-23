@@ -21,24 +21,23 @@ public class RocketMQNotify implements MQNotify{
 
     @Override
     public void report(Map<String, Integer> map) {
-        System.out.println("rocketmq reporting");
-//        try {
-//            byte[] compress = CompressUtil.compress(JSONUtil.toJsonStr(map));
-//            rocketMQTemplate.asyncSend(RocketMQConsts.ROCKET_MQ_HOT_KEY_ANALYSIS ,compress, new SendCallback() {
-//
-//                @Override
-//                public void onSuccess(SendResult sendResult) {
-//
-//                }
-//
-//                @Override
-//                public void onException(Throwable throwable) {
-//
-//                }
-//            });
-//        } catch (Exception e) {
-//            e.printStackTrace();
-//        }
 
+        try {
+            byte[] compress = CompressUtil.compress(JSONUtil.toJsonStr(map));
+            rocketMQTemplate.asyncSend(RocketMQConsts.ROCKET_MQ_HOT_KEY_ANALYSIS,compress, new SendCallback() {
+
+                @Override
+                public void onSuccess(SendResult sendResult) {
+
+                }
+
+                @Override
+                public void onException(Throwable throwable) {
+
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
