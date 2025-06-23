@@ -1,2 +1,3 @@
 org.springframework.boot.autoconfigure.EnableAutoConfiguration=\
-com.kuma.tools.dynamicHot.config.HotKeyAutoConfiguration
+com.kuma.tools.dynamicHot.config.HotKeyAutoConfiguration,\
+  com.kuma.tools.dynamicHot.config.HotKeyConditionalConfiguration
