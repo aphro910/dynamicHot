@@ -18,8 +18,10 @@ public class HotKeyReport {
     @Scheduled(initialDelay = 5000, fixedRate = 5000)
     public void report() {
         HotKeyContext.flag = 1;
-        mqNotify.report(HotKeyContext.hotKeyMap);
-        HotKeyContext.hotKeyMap = new ConcurrentHashMap<>();
+        if (!HotKeyContext.hotKeyMap.isEmpty()) {
+            mqNotify.report(HotKeyContext.hotKeyMap);
+            HotKeyContext.hotKeyMap = new ConcurrentHashMap<>();
+        }
         HotKeyContext.flag = 0;
     }
 }

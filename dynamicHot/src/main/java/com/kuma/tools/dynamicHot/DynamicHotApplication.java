@@ -8,6 +8,7 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 
 @SpringBootApplication
 @EnableAspectJAutoProxy
+@EnableScheduling
 public class DynamicHotApplication {
 
     public static void main(String[] args) {
