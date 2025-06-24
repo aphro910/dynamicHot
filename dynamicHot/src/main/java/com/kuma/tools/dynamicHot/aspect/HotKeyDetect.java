@@ -1,10 +1,12 @@
 package com.kuma.tools.dynamicHot.aspect;
 
 import com.kuma.tools.dynamicHot.aop.DynamicHot;
+import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -12,31 +14,36 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.Map;
 
 @Aspect
 @Component
 public class HotKeyDetect {
+
+    @Autowired
+    CaffeineLocalCache localCache;
 
     private final ExpressionParser parser = new SpelExpressionParser();
 
     //环绕通知
     @Around("@annotation(com.kuma.tools.dynamicHot.aop.DynamicHot)")
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
-        // 1. 获取注解信息
+        //获取注解信息
         DynamicHot dynamicHot = getDynamicHotAnnotation(joinPoint);
         String tableName = dynamicHot.tableName();
         String spelExpression = dynamicHot.id();
 
-        // 2. 解析SpEL表达式
+        //解析SpEL表达式
         String dynamicKey = parseSpelExpression(joinPoint, spelExpression);
 
-        System.out.println("表名: " + tableName + ", 动态键: " + dynamicKey);
-        System.out.println(HotKeyContext.hotKey);
-        //todo 判断是否是hotkey
-        Object ret =  joinPoint.proceed();
+        //判断是否是hotkey
         String key = tableName+"_"+dynamicKey;
         record(key);
-        return ret;
+
+        if (true) {
+            return localCache.getRet(key, joinPoint);
+        }
+        return joinPoint.proceed();
     }
 
     // 获取方法上的注解
@@ -75,6 +82,10 @@ public class HotKeyDetect {
             }
         }
         HotKeyContext.keyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
+    }
+
+    private boolean isHot(String key) {
+        return HotKeyContext.hotKey.contains(key);
     }
 
 }
