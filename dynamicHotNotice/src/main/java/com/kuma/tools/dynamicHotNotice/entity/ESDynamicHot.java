@@ -9,13 +9,13 @@ import org.springframework.data.elasticsearch.annotations.FieldType;
 import java.util.Date;
 
 @Data
-@Document(indexName = "comment")
+@Document(indexName = "dynamic_hot")
 public class ESDynamicHot {
     @Id
     private long id;
     @Field(type = FieldType.Keyword)
     private String key;
-    @Field(type = FieldType.Keyword)
+    @Field(type = FieldType.Integer)
     private int count;
     @Field(type = FieldType.Date)
     private Date time;

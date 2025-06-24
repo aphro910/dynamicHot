@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHot.mqnotify;
+package com.kuma.tools.dynamicHot.notify;
 
 import java.util.Map;
 

@@ -9,12 +9,14 @@ import com.kuma.tools.dynamicHotNotice.entity.ESDynamicHot;
 import com.kuma.tools.dynamicHotNotice.utils.CompressUtil;
 
 import com.kuma.tools.dynamicHotNotice.utils.SnowFlakeGenerator;
+import lombok.extern.log4j.Log4j2;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.*;
 import org.apache.rocketmq.common.message.MessageExt;
+import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.elasticsearch.core.ElasticsearchRestTemplate;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -25,26 +27,25 @@ import java.util.List;
 import java.util.Set;
 
 @Component
-public class RocketMQConsumer {
+@Log4j2
+@ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "rocketmq")
+public class RocketMQConsumer implements HotKeyMQConsumer {
 
     @Value("${rocketmq.name-server}")
     private String serverAddr;
     @Autowired
     private ESDynamicHotMapper esDynamicHotMapper;
-    @Autowired
-    private ElasticsearchRestTemplate elasticsearchRestTemplate;
 
-    private DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("hot_key_detect_consumer");
+    private DefaultMQPushConsumer detectConsumer = new DefaultMQPushConsumer("hot_key_detect_consumer");
 
     @PostConstruct
     public void start() {
         try {
             // 指定Namesrv地址信息.
-            consumer.setNamesrvAddr(serverAddr);
+            detectConsumer.setNamesrvAddr(serverAddr);
             // 订阅Topic
-            consumer.subscribe(RocketMQConsts.ROCKET_MQ_HOT_KEY_ANALYSIS, "*");
-//            consumer.setConsumeMessageBatchMaxSize(100);//一次拉取的消息数量，默认是1
-            consumer.registerMessageListener(new MessageListenerConcurrently() {
+            detectConsumer.subscribe(RocketMQConsts.ROCKET_MQ_HOT_KEY_ANALYSIS, "*");
+            detectConsumer.registerMessageListener(new MessageListenerConcurrently() {
                 @Override
                 public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
                     try {
@@ -52,6 +53,7 @@ public class RocketMQConsumer {
                         List<ESDynamicHot> batchList = new ArrayList<>();
                         for (MessageExt message : list) {
                             String msg = CompressUtil.decompress(message.getBody());
+                            log.info("msg received:{}", msg);
                             JSONObject jsonObject = JSONUtil.parseObj(msg);
                             Set<String> keySet = jsonObject.keySet();
                             for (String key : keySet) {
@@ -64,16 +66,15 @@ public class RocketMQConsumer {
                                 batchList.add(esDynamicHot);
                             }
                         }
-                        System.out.println(batchList);
-//                        esDynamicHotMapper.saveAll(batchList);
+                        esDynamicHotMapper.saveAll(batchList);
                         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                     } catch (Exception e) {
                         return ConsumeConcurrentlyStatus.RECONSUME_LATER;
                     }
                 }
             });
-            consumer.start();
-            System.out.println("start consumer ....");
+            detectConsumer.start();
+            log.debug("hotkey consumer started successfully");
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -81,6 +82,6 @@ public class RocketMQConsumer {
 
     @PreDestroy
     public void stop() {
-        consumer.shutdown();
+        detectConsumer.shutdown();
     }
 }

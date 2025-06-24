@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHot.mqnotify;
+package com.kuma.tools.dynamicHot.notify;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;

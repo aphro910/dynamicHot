@@ -31,6 +31,7 @@ public class HotKeyDetect {
         String dynamicKey = parseSpelExpression(joinPoint, spelExpression);
 
         System.out.println("表名: " + tableName + ", 动态键: " + dynamicKey);
+        System.out.println(HotKeyContext.hotKey);
         //todo 判断是否是hotkey
         Object ret =  joinPoint.proceed();
         String key = tableName+"_"+dynamicKey;
@@ -73,7 +74,7 @@ public class HotKeyDetect {
                 e.printStackTrace();
             }
         }
-        HotKeyContext.hotKeyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
+        HotKeyContext.keyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
     }
 
 }

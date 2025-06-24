@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHot.mqnotify;
+package com.kuma.tools.dynamicHot.notify;
 
 import cn.hutool.json.JSONUtil;
 import com.kuma.tools.dynamicHot.consts.RocketMQConsts;
@@ -25,7 +25,6 @@ public class RocketMQNotify implements MQNotify{
         try {
             byte[] compress = CompressUtil.compress(JSONUtil.toJsonStr(map));
             rocketMQTemplate.asyncSend(RocketMQConsts.ROCKET_MQ_HOT_KEY_ANALYSIS,compress, new SendCallback() {
-
                 @Override
                 public void onSuccess(SendResult sendResult) {
 
