@@ -17,10 +17,10 @@ public class HotKeyReport {
     @Scheduled(initialDelay = 5000, fixedRate = 5000)
     public void report() {
         HotKeyContext.flag = 1;
-//        if (!HotKeyContext.keyMap.isEmpty()) {
+        if (!HotKeyContext.keyMap.isEmpty()) {
             mqNotify.report(HotKeyContext.keyMap);
             HotKeyContext.keyMap = new ConcurrentHashMap<>();
-//        }
+        }
         HotKeyContext.flag = 0;
     }
 }
