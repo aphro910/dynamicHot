@@ -14,13 +14,12 @@ public class HotKeyReport {
     @Autowired
     private MQNotify mqNotify;
 
-    @Scheduled(initialDelay = 5000, fixedRate = 5000)
+    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.collect.initial-delay:5000}",
+            fixedRateString = "${spring.dynamic.hotkey.collect.fixed-rate:5000}")
     public void report() {
-        HotKeyContext.flag = 1;
         if (!HotKeyContext.keyMap.isEmpty()) {
             mqNotify.report(HotKeyContext.keyMap);
-            HotKeyContext.keyMap = new ConcurrentHashMap<>();
+            HotKeyContext.keyMap.clear();
         }
-        HotKeyContext.flag = 0;
     }
 }

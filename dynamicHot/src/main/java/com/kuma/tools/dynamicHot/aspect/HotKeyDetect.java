@@ -1,12 +1,16 @@
 package com.kuma.tools.dynamicHot.aspect;
 
 import com.kuma.tools.dynamicHot.aop.DynamicHot;
+import com.kuma.tools.dynamicHot.cache.Caches;
 import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
+import com.kuma.tools.dynamicHot.consts.Constants;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
+import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -21,7 +25,7 @@ import java.util.Map;
 public class HotKeyDetect {
 
     @Autowired
-    CaffeineLocalCache localCache;
+    Caches caches;
 
     private final ExpressionParser parser = new SpelExpressionParser();
 
@@ -40,8 +44,8 @@ public class HotKeyDetect {
         String key = tableName+"_"+dynamicKey;
         record(key);
 
-        if (true) {
-            return localCache.getRet(key, joinPoint);
+        if (isHot(key)) {
+            return caches.get(key, joinPoint);
         }
         return joinPoint.proceed();
     }
@@ -74,13 +78,6 @@ public class HotKeyDetect {
     }
 
     private void record(String key) {
-        while (HotKeyContext.flag == 1) {
-            try {
-                Thread.sleep(100);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
         HotKeyContext.keyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
     }
 

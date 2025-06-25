@@ -1,7 +1,6 @@
 package com.kuma.tools.dynamicHotNotice.timer;
 
 import cn.hutool.json.JSONUtil;
-import com.kuma.tools.dynamicHotNotice.consumer.HotKeyMQConsumer;
 import com.kuma.tools.dynamicHotNotice.entity.ESDynamicHot;
 import com.kuma.tools.dynamicHotNotice.notify.MQNotify;
 import org.elasticsearch.index.query.BoolQueryBuilder;
@@ -12,7 +11,6 @@ import org.elasticsearch.search.aggregations.AggregationBuilders;
 import org.elasticsearch.search.aggregations.PipelineAggregatorBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
-import org.elasticsearch.search.aggregations.metrics.Sum;
 import org.elasticsearch.search.aggregations.metrics.SumAggregationBuilder;
 import org.elasticsearch.search.aggregations.pipeline.BucketSelectorPipelineAggregationBuilder;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -37,9 +35,9 @@ public class HotKeyNotice {
     private ElasticsearchRestTemplate elasticsearchRestTemplate;
     @Autowired
     MQNotify mqNotify;
-    @Value("${spring.hotkey.detect.timerange:60}")
+    @Value("${spring.dynamic.hotkey.detect.timerange:60}")
     private String timerange;
-    @Value("${spring.hotkey.detect.mincount:5}")
+    @Value("${spring.dynamic.hotkey.detect.mincount:5}")
     private String minCount;
 
     private Map<String, Object> params = new HashMap<>();
