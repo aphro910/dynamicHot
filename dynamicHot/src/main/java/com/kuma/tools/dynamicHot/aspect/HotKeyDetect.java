@@ -73,7 +73,9 @@ public class HotKeyDetect {
     }
 
     private void record(String key) {
+        HotKeyContext.lock.readLock().lock();
         HotKeyContext.keyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
+        HotKeyContext.lock.readLock().unlock();
     }
 
     private boolean isHot(String key) {

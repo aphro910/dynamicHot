@@ -20,9 +20,11 @@ public class HotKeyReport {
             fixedRateString = "${spring.dynamic.hotkey.collect.fixed-rate:5000}")
     public void report() {
         if (!HotKeyContext.keyMap.isEmpty()) {
+            HotKeyContext.lock.writeLock().lock();
             mqNotify.report(HotKeyContext.keyMap);
-            HotKeyContext.keyMap.clear();//高并发可能会出现部分数据丢失
+            HotKeyContext.keyMap.clear();
             HotKeyContext.timestamp = System.currentTimeMillis();
+            HotKeyContext.lock.writeLock().unlock();
         }
     }
 }

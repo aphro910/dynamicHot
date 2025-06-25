@@ -8,6 +8,7 @@ import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
 public class HotKeyContext {
+    public static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     public static long timestamp = System.currentTimeMillis();
     public static Map<String, Integer> keyMap = new ConcurrentHashMap<>();
     public static Set<String> hotKey = new HashSet<>();
