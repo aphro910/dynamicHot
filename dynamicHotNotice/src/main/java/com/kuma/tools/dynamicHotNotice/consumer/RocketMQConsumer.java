@@ -13,7 +13,6 @@ import lombok.extern.log4j.Log4j2;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.*;
 import org.apache.rocketmq.common.message.MessageExt;
-import org.apache.rocketmq.spring.core.RocketMQTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -49,12 +48,13 @@ public class RocketMQConsumer implements HotKeyMQConsumer {
                 @Override
                 public ConsumeConcurrentlyStatus consumeMessage(List<MessageExt> list, ConsumeConcurrentlyContext consumeConcurrentlyContext) {
                     try {
-                        Date time = new Date();
                         List<ESDynamicHot> batchList = new ArrayList<>();
                         for (MessageExt message : list) {
                             String msg = CompressUtil.decompress(message.getBody());
                             log.info("msg received:{}", msg);
-                            JSONObject jsonObject = JSONUtil.parseObj(msg);
+                            JSONObject obj = JSONUtil.parseObj(msg);
+                            long timestamp = obj.getLong("timestamp");
+                            JSONObject jsonObject = obj.getJSONObject("key");
                             Set<String> keySet = jsonObject.keySet();
                             for (String key : keySet) {
                                 ESDynamicHot esDynamicHot = new ESDynamicHot();
@@ -62,7 +62,7 @@ public class RocketMQConsumer implements HotKeyMQConsumer {
                                 esDynamicHot.setId(SnowFlakeGenerator.nextId());
                                 esDynamicHot.setKey(key);
                                 esDynamicHot.setCount(count);
-                                esDynamicHot.setTime(time);
+                                esDynamicHot.setTime(new Date(timestamp));
                                 batchList.add(esDynamicHot);
                             }
                         }

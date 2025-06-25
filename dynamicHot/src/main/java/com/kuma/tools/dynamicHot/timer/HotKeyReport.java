@@ -3,12 +3,14 @@ package com.kuma.tools.dynamicHot.timer;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
 import com.kuma.tools.dynamicHot.notify.MQNotify;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
+@ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", matchIfMissing = false)
 public class HotKeyReport {
 
     @Autowired
@@ -19,7 +21,8 @@ public class HotKeyReport {
     public void report() {
         if (!HotKeyContext.keyMap.isEmpty()) {
             mqNotify.report(HotKeyContext.keyMap);
-            HotKeyContext.keyMap.clear();
+            HotKeyContext.keyMap.clear();//高并发可能会出现部分数据丢失
+            HotKeyContext.timestamp = System.currentTimeMillis();
         }
     }
 }

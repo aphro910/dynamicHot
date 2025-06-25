@@ -2,15 +2,11 @@ package com.kuma.tools.dynamicHot.aspect;
 
 import com.kuma.tools.dynamicHot.aop.DynamicHot;
 import com.kuma.tools.dynamicHot.cache.Caches;
-import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
-import com.kuma.tools.dynamicHot.consts.Constants;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
-import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.*;
 import org.aspectj.lang.reflect.MethodSignature;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.expression.Expression;
 import org.springframework.expression.ExpressionParser;
 import org.springframework.expression.spel.standard.SpelExpressionParser;
@@ -18,7 +14,6 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.Map;
 
 @Aspect
 @Component

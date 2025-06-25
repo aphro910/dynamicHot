@@ -24,6 +24,7 @@ public class HotKeyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", matchIfMissing = false)
     public HotKeyReport HotKeyReport() {
         return new HotKeyReport();
     }
