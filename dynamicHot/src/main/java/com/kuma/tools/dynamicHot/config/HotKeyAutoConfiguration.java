@@ -5,6 +5,7 @@ import com.kuma.tools.dynamicHot.cache.AllCache;
 import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
 import com.kuma.tools.dynamicHot.cache.RedisCache;
 import com.kuma.tools.dynamicHot.consumer.RocketMQConsumer;
+import com.kuma.tools.dynamicHot.context.HotKeyContext;
 import com.kuma.tools.dynamicHot.notify.LocalNotify;
 import com.kuma.tools.dynamicHot.notify.RocketMQNotify;
 import com.kuma.tools.dynamicHot.timer.HotKeyReport;
@@ -24,21 +25,26 @@ public class HotKeyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", matchIfMissing = false)
     public HotKeyReport HotKeyReport() {
         return new HotKeyReport();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "local")
+    public HotKeyContext HotKeyContext() {
+        return new HotKeyContext();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "local", matchIfMissing = true)
     public CaffeineLocalCache CaffeineLocalCache() {
         return new CaffeineLocalCache();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "local")
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "local", matchIfMissing = true)
     public LocalNotify LocalNotify() {
         return new LocalNotify();
     }

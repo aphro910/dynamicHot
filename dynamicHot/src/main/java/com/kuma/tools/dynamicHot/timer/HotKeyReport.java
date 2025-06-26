@@ -10,21 +10,22 @@ import org.springframework.stereotype.Component;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Component
-@ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", matchIfMissing = false)
 public class HotKeyReport {
 
     @Autowired
     private MQNotify mqNotify;
+    @Autowired
+    private HotKeyContext hotKeyContext;
 
     @Scheduled(initialDelayString = "${spring.dynamic.hotkey.collect.initial-delay:5000}",
             fixedRateString = "${spring.dynamic.hotkey.collect.fixed-rate:5000}")
     public void report() {
-        if (!HotKeyContext.keyMap.isEmpty()) {
-            HotKeyContext.lock.writeLock().lock();
-            mqNotify.report(HotKeyContext.keyMap);
-            HotKeyContext.keyMap.clear();
-            HotKeyContext.timestamp = System.currentTimeMillis();
-            HotKeyContext.lock.writeLock().unlock();
+        if (!hotKeyContext.keyMap.isEmpty()) {
+            hotKeyContext.lock.writeLock().lock();
+            mqNotify.report(hotKeyContext.keyMap);
+            hotKeyContext.keyMap.clear();
+            hotKeyContext.timestamp = System.currentTimeMillis();
+            hotKeyContext.lock.writeLock().unlock();
         }
     }
 }

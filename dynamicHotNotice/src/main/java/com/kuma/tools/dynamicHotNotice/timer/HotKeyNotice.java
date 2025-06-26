@@ -37,7 +37,7 @@ public class HotKeyNotice {
     MQNotify mqNotify;
     @Value("${spring.dynamic.hotkey.detect.timerange:60}")
     private String timerange;
-    @Value("${spring.dynamic.hotkey.detect.mincount:5}")
+    @Value("${spring.dynamic.hotkey.detect.mincount:1}")
     private String minCount;
 
     private Map<String, Object> params = new HashMap<>();

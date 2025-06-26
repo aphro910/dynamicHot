@@ -20,11 +20,13 @@ public class RocketMQNotify implements MQNotify{
 
     @Autowired
     private RocketMQTemplate rocketMQTemplate;
+    @Autowired
+    private HotKeyContext hotKeyContext;
 
     @Override
     public void report(Map<String, Integer> map) {
         Map<String,Object> obj = new HashMap<>();
-        obj.put("timestamp", HotKeyContext.timestamp);
+        obj.put("timestamp", hotKeyContext.timestamp);
         obj.put("key", map);
         try {
             byte[] compress = CompressUtil.compress(JSONUtil.toJsonStr(obj));

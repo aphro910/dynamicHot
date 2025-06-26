@@ -21,6 +21,8 @@ public class HotKeyDetect {
 
     @Autowired
     Caches caches;
+    @Autowired
+    HotKeyContext hotKeyContext;
 
     private final ExpressionParser parser = new SpelExpressionParser();
 
@@ -73,13 +75,13 @@ public class HotKeyDetect {
     }
 
     private void record(String key) {
-        HotKeyContext.lock.readLock().lock();
-        HotKeyContext.keyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
-        HotKeyContext.lock.readLock().unlock();
+        hotKeyContext.lock.readLock().lock();
+        hotKeyContext.keyMap.compute(key, (k, v) -> (v == null) ? 1 : v + 1);
+        hotKeyContext.lock.readLock().unlock();
     }
 
     private boolean isHot(String key) {
-        return HotKeyContext.hotKey.contains(key);
+        return hotKeyContext.hotKey.contains(key);
     }
 
 }

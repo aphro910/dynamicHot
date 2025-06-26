@@ -1,15 +1,33 @@
 package com.kuma.tools.dynamicHot.context;
 
+import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
 import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.locks.ReentrantLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 
+@Component
 public class HotKeyContext {
-    public static ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    public static long timestamp = System.currentTimeMillis();
-    public static Map<String, Integer> keyMap = new ConcurrentHashMap<>();
-    public static Set<String> hotKey = new HashSet<>();
+    public ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
+    public long timestamp = System.currentTimeMillis();
+    public Map<String, Integer> keyMap;
+    public Set<String> hotKey = new HashSet<>();
+
+    @Value("${spring.dynamic.hotkey.report.maxSize:-1}")
+    private Integer maxSize;
+
+    @PostConstruct
+    public void initMap() {
+        if (maxSize > 0) {
+            ConcurrentLinkedHashMap.Builder<String, Integer> builder = new ConcurrentLinkedHashMap.Builder<>();
+            keyMap = builder.maximumWeightedCapacity(maxSize).build();
+        } else {
+            keyMap = new ConcurrentHashMap<>();
+        }
+    }
 }

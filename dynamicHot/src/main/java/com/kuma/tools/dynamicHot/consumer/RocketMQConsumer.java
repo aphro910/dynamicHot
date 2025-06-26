@@ -12,6 +12,7 @@ import org.apache.rocketmq.client.consumer.listener.ConsumeConcurrentlyStatus;
 import org.apache.rocketmq.client.consumer.listener.MessageListenerConcurrently;
 import org.apache.rocketmq.common.message.MessageExt;
 import org.apache.rocketmq.common.protocol.heartbeat.MessageModel;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
@@ -30,6 +31,9 @@ public class RocketMQConsumer implements HotKeyMQConsumer {
     @Value("${rocketmq.name-server}")
     private String serverAddr;
 
+    @Autowired
+    private HotKeyContext hotKeyContext;
+
     private DefaultMQPushConsumer consumer = new DefaultMQPushConsumer("hot_key_notice_consumer");
 
     @PostConstruct
@@ -47,7 +51,7 @@ public class RocketMQConsumer implements HotKeyMQConsumer {
                         for (MessageExt message : list) {
                             String msg = CompressUtil.decompress(message.getBody());
                             List<String> hotList = JSONUtil.toList(JSONUtil.parseArray(msg),String.class);
-                            HotKeyContext.hotKey = new HashSet<>(hotList);
+                            hotKeyContext.hotKey = new HashSet<>(hotList);
                         }
                         return ConsumeConcurrentlyStatus.CONSUME_SUCCESS;
                     } catch (Exception e) {
