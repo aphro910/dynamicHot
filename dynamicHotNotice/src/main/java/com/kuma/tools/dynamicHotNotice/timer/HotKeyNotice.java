@@ -8,7 +8,6 @@ import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.script.Script;
 import org.elasticsearch.script.ScriptType;
 import org.elasticsearch.search.aggregations.AggregationBuilders;
-import org.elasticsearch.search.aggregations.BucketOrder;
 import org.elasticsearch.search.aggregations.PipelineAggregatorBuilders;
 import org.elasticsearch.search.aggregations.bucket.terms.Terms;
 import org.elasticsearch.search.aggregations.bucket.terms.TermsAggregationBuilder;
@@ -40,8 +39,6 @@ public class HotKeyNotice {
     private String timerange;
     @Value("${spring.dynamic.hotkey.detect.mincount:1}")
     private String minCount;
-    @Value("${spring.dynamic.hotkey.detect.maxsize:100}")
-    private int maxSize;
 
     private Map<String, Object> params = new HashMap<>();
 
@@ -55,11 +52,8 @@ public class HotKeyNotice {
     public void collect() {
         TermsAggregationBuilder aggregation = AggregationBuilders
                 .terms("data_row_change")  // 聚合名称
-                .field("key") ; // 分组字段
-
-        if (maxSize > 0) {
-            aggregation.size(maxSize).order(BucketOrder.aggregation("total_count", false));
-        }
+                .field("key")
+                .minDocCount(Long.parseLong(minCount));          // 分组字段
         // 创建子聚合：对每个分组中的 "count" 字段求和
         SumAggregationBuilder sumAggregation = AggregationBuilders
                 .sum("total_count")        // 子聚合名称（自定义）
