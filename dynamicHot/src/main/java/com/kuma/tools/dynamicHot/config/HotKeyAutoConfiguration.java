@@ -4,14 +4,11 @@ import com.kuma.tools.dynamicHot.aspect.HotKeyDetect;
 import com.kuma.tools.dynamicHot.cache.AllCache;
 import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
 import com.kuma.tools.dynamicHot.cache.RedisCache;
-import com.kuma.tools.dynamicHot.collect.ElasticCollect;
-import com.kuma.tools.dynamicHot.collect.LocalCollect;
+import com.kuma.tools.dynamicHot.consumer.RocketMQConsumer;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
-import com.kuma.tools.dynamicHot.record.ElasticRecord;
-import com.kuma.tools.dynamicHot.record.LocalRecord;
-
-import com.kuma.tools.dynamicHot.timer.HotKeyCollect;
-import com.kuma.tools.dynamicHot.timer.HotKeyRecord;
+import com.kuma.tools.dynamicHot.notify.LocalNotify;
+import com.kuma.tools.dynamicHot.notify.RocketMQNotify;
+import com.kuma.tools.dynamicHot.timer.HotKeyReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.context.annotation.Bean;
@@ -28,14 +25,8 @@ public class HotKeyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    public HotKeyRecord HotKeyRecord() {
-        return new HotKeyRecord();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public HotKeyCollect HotKeyCollect() {
-        return new HotKeyCollect();
+    public HotKeyReport HotKeyReport() {
+        return new HotKeyReport();
     }
 
     @Bean
@@ -49,6 +40,13 @@ public class HotKeyAutoConfiguration {
     @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "local", matchIfMissing = true)
     public CaffeineLocalCache CaffeineLocalCache() {
         return new CaffeineLocalCache();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "local", matchIfMissing = true)
+    public LocalNotify LocalNotify() {
+        return new LocalNotify();
     }
 
     @Bean
@@ -67,31 +65,16 @@ public class HotKeyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.record.type", havingValue = "local", matchIfMissing = true)
-    public LocalRecord LocalNotify() {
-        return new LocalRecord();
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "rocketmq")
+    public RocketMQNotify RocketMQNotify() {
+        return new RocketMQNotify();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.record.type", havingValue = "elastic")
-    public ElasticRecord ElasticRecord() {
-        return new ElasticRecord();
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "rocketmq")
+    public RocketMQConsumer RocketMQConsumer() {
+        return new RocketMQConsumer();
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.record.type", havingValue = "local", matchIfMissing = true)
-    public LocalCollect LocalCollect() {
-        return new LocalCollect();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.record.type", havingValue = "elastic")
-    public ElasticCollect ElasticCollect() {
-        return new ElasticCollect();
-    }
-
 
 }

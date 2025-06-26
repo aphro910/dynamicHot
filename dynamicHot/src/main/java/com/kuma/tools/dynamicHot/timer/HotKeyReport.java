@@ -1,25 +1,28 @@
 package com.kuma.tools.dynamicHot.timer;
 
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
-import com.kuma.tools.dynamicHot.record.HotRecord;
+import com.kuma.tools.dynamicHot.notify.MQNotify;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
 
+import java.util.concurrent.ConcurrentHashMap;
+
 @Component
-public class HotKeyRecord {
+public class HotKeyReport {
 
     @Autowired
-    private HotRecord hotRecord;
+    private MQNotify mqNotify;
     @Autowired
     private HotKeyContext hotKeyContext;
 
-    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.record.initial-delay:5000}",
-            fixedRateString = "${spring.dynamic.hotkey.record.fixed-rate:5000}")
-    public void record() {
+    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.collect.initial-delay:5000}",
+            fixedRateString = "${spring.dynamic.hotkey.collect.fixed-rate:5000}")
+    public void report() {
         if (!hotKeyContext.keyMap.isEmpty()) {
             hotKeyContext.lock.writeLock().lock();
-            hotRecord.record(hotKeyContext.keyMap);
+            mqNotify.report(hotKeyContext.keyMap);
             hotKeyContext.keyMap.clear();
             hotKeyContext.timestamp = System.currentTimeMillis();
             hotKeyContext.lock.writeLock().unlock();
