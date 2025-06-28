@@ -25,7 +25,7 @@ public class NacosRegister implements Register {
 
     @Value("${spring.cloud.nacos.config.server-addr:212.129.223.152:8848}")
     private String serverAddr;
-    @Value("${spring.regist.servername:im-netty}")
+    @Value("${spring.regist.servername:hotkey-netty}")
     private String serverName;
     @Value("${spring.regist.namespace:public}")
     private String namespace;
