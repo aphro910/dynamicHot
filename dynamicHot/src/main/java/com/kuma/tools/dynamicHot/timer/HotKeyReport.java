@@ -1,19 +1,16 @@
 package com.kuma.tools.dynamicHot.timer;
 
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
-import com.kuma.tools.dynamicHot.notify.MQNotify;
+import com.kuma.tools.dynamicHot.notify.Notify;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
-
-import java.util.concurrent.ConcurrentHashMap;
 
 @Component
 public class HotKeyReport {
 
     @Autowired
-    private MQNotify mqNotify;
+    private Notify notify;
     @Autowired
     private HotKeyContext hotKeyContext;
 
@@ -22,7 +19,7 @@ public class HotKeyReport {
     public void report() {
         if (!hotKeyContext.keyMap.isEmpty()) {
             hotKeyContext.lock.writeLock().lock();
-            mqNotify.report(hotKeyContext.keyMap);
+            notify.send(hotKeyContext.keyMap);
             hotKeyContext.keyMap.clear();
             hotKeyContext.timestamp = System.currentTimeMillis();
             hotKeyContext.lock.writeLock().unlock();

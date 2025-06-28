@@ -4,10 +4,10 @@ import com.kuma.tools.dynamicHot.aspect.HotKeyDetect;
 import com.kuma.tools.dynamicHot.cache.AllCache;
 import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
 import com.kuma.tools.dynamicHot.cache.RedisCache;
-import com.kuma.tools.dynamicHot.consumer.RocketMQConsumer;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
-import com.kuma.tools.dynamicHot.notify.LocalNotify;
-import com.kuma.tools.dynamicHot.notify.RocketMQNotify;
+import com.kuma.tools.dynamicHot.notify.Notify;
+import com.kuma.tools.dynamicHot.notify.netty.NettyClient;
+import com.kuma.tools.dynamicHot.notify.register.NacosRegister;
 import com.kuma.tools.dynamicHot.timer.HotKeyReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -37,16 +37,28 @@ public class HotKeyAutoConfiguration {
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "local", matchIfMissing = true)
-    public CaffeineLocalCache CaffeineLocalCache() {
-        return new CaffeineLocalCache();
+    public Notify Notify() {
+        return new Notify();
     }
 
     @Bean
     @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "local", matchIfMissing = true)
-    public LocalNotify LocalNotify() {
-        return new LocalNotify();
+    public NettyClient NettyClient() {
+        return new NettyClient();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.register.type", havingValue = "nacos", matchIfMissing = true)
+    public NacosRegister NacosRegister() {
+        return new NacosRegister();
+    }
+
+    @Bean
+    @ConditionalOnMissingBean
+    @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "local", matchIfMissing = true)
+    public CaffeineLocalCache CaffeineLocalCache() {
+        return new CaffeineLocalCache();
     }
 
     @Bean
@@ -63,18 +75,5 @@ public class HotKeyAutoConfiguration {
         return new AllCache();
     }
 
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "rocketmq")
-    public RocketMQNotify RocketMQNotify() {
-        return new RocketMQNotify();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "rocketmq")
-    public RocketMQConsumer RocketMQConsumer() {
-        return new RocketMQConsumer();
-    }
 
 }
