@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHotNotice.consumer;
+package com.kuma.tools.dynamicHotCompute.consumer;
 
 
 import lombok.extern.log4j.Log4j2;

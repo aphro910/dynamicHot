@@ -1,7 +1,4 @@
-package com.kuma.tools.dynamicHotNotice.utils;
-
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Component;
+package com.kuma.tools.dynamicHotCompute.utils;
 
 import java.net.InetAddress;
 

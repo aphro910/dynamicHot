@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHotNotice;
+package com.kuma.tools.dynamicHotCompute;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;

@@ -1,6 +1,6 @@
-package com.kuma.tools.dynamicHotNotice.mapper;
+package com.kuma.tools.dynamicHotCompute.mapper;
 
-import com.kuma.tools.dynamicHotNotice.entity.ESDynamicHot;
+import com.kuma.tools.dynamicHotCompute.entity.ESDynamicHot;
 import org.springframework.data.elasticsearch.repository.ElasticsearchRepository;
 import org.springframework.stereotype.Repository;
 

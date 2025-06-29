@@ -1,9 +1,7 @@
-package com.kuma.tools.dynamicHotNotice.notify;
+package com.kuma.tools.dynamicHotCompute.notify;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.stereotype.Component;
-
-import java.util.Map;
 
 @Component
 @ConditionalOnProperty(name = "spring.dynamic.hotkey.mq.type", havingValue = "kafka")

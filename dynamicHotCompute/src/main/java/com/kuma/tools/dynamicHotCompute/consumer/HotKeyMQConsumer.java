@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHotNotice.consumer;
+package com.kuma.tools.dynamicHotCompute.consumer;
 
 public interface HotKeyMQConsumer {
 

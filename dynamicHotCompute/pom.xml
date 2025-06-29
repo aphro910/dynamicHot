@@ -5,7 +5,7 @@
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>com.kuma.tools</groupId>
-    <artifactId>dynamicHotNotice</artifactId>
+    <artifactId>dynamicHotCompute</artifactId>
     <version>0.0.1-SNAPSHOT</version>
     <name>dynamicHotNotice</name>
     <description>Demo project for Spring Boot</description>
@@ -91,7 +91,7 @@
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>${spring-boot.version}</version>
                 <configuration>
-                    <mainClass>com.kuma.tools.dynamicHotNotice.DynamicHotNoticeApplication</mainClass>
+                    <mainClass>com.kuma.tools.dynamicHotCompute.DynamicHotNoticeApplication</mainClass>
                     <skip>true</skip>
                 </configuration>
                 <executions>

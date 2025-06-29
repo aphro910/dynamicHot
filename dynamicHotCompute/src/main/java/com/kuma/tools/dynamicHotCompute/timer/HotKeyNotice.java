@@ -1,8 +1,8 @@
-package com.kuma.tools.dynamicHotNotice.timer;
+package com.kuma.tools.dynamicHotCompute.timer;
 
 import cn.hutool.json.JSONUtil;
-import com.kuma.tools.dynamicHotNotice.entity.ESDynamicHot;
-import com.kuma.tools.dynamicHotNotice.notify.MQNotify;
+import com.kuma.tools.dynamicHotCompute.entity.ESDynamicHot;
+import com.kuma.tools.dynamicHotCompute.notify.MQNotify;
 import org.elasticsearch.index.query.BoolQueryBuilder;
 import org.elasticsearch.index.query.QueryBuilders;
 import org.elasticsearch.script.Script;

@@ -1,14 +1,14 @@
-package com.kuma.tools.dynamicHotNotice.consumer;
+package com.kuma.tools.dynamicHotCompute.consumer;
 
 
 import cn.hutool.json.JSONObject;
 import cn.hutool.json.JSONUtil;
-import com.kuma.tools.dynamicHotNotice.mapper.ESDynamicHotMapper;
-import com.kuma.tools.dynamicHotNotice.consts.RocketMQConsts;
-import com.kuma.tools.dynamicHotNotice.entity.ESDynamicHot;
-import com.kuma.tools.dynamicHotNotice.utils.CompressUtil;
+import com.kuma.tools.dynamicHotCompute.mapper.ESDynamicHotMapper;
+import com.kuma.tools.dynamicHotCompute.consts.RocketMQConsts;
+import com.kuma.tools.dynamicHotCompute.entity.ESDynamicHot;
+import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 
-import com.kuma.tools.dynamicHotNotice.utils.SnowFlakeGenerator;
+import com.kuma.tools.dynamicHotCompute.utils.SnowFlakeGenerator;
 import lombok.extern.log4j.Log4j2;
 import org.apache.rocketmq.client.consumer.DefaultMQPushConsumer;
 import org.apache.rocketmq.client.consumer.listener.*;

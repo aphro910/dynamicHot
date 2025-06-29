@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHotNotice.entity;
+package com.kuma.tools.dynamicHotCompute.entity;
 
 import lombok.Data;
 import org.springframework.data.annotation.Id;

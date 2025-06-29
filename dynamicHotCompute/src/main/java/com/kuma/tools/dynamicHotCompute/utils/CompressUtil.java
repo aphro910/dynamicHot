@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHotNotice.utils;
+package com.kuma.tools.dynamicHotCompute.utils;
 
 import org.xerial.snappy.Snappy;
 
