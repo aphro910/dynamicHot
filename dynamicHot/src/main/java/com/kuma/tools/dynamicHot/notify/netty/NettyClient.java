@@ -2,7 +2,10 @@ package com.kuma.tools.dynamicHot.notify.netty;
 
 import cn.hutool.json.JSONUtil;
 import com.kuma.tools.dynamicHot.notify.Message;
+import com.kuma.tools.dynamicHot.utils.CompressUtil;
 import io.netty.bootstrap.Bootstrap;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
@@ -10,6 +13,7 @@ import io.netty.channel.socket.nio.NioSocketChannel;
 import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
@@ -21,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.net.URI;
+import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -39,6 +44,7 @@ public class NettyClient {
             Channel ch = entry.getValue();
             if (ch.id().equals(channel.id())) {
                 connections.remove(entry.getKey());
+                log.info("remove channel {}", entry.getKey());
                 return;
             }
         }
@@ -101,7 +107,14 @@ public class NettyClient {
             Message message = new Message();
             message.setKey(key);
             message.setCount(count);
-            channel.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(message)));
+            try {
+                byte[] binaryData = CompressUtil.compress(JSONUtil.toJsonStr(message));
+                ByteBuf buffer = Unpooled.wrappedBuffer(binaryData);
+                channel.writeAndFlush(new BinaryWebSocketFrame(buffer));
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         }
     }
 

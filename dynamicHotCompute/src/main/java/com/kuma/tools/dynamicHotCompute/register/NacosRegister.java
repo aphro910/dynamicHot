@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHot.notify.register;
+package com.kuma.tools.dynamicHotCompute.register;
 
 import com.alibaba.nacos.api.naming.NamingFactory;
 import com.alibaba.nacos.api.naming.NamingService;
@@ -6,17 +6,14 @@ import com.alibaba.nacos.api.naming.listener.Event;
 import com.alibaba.nacos.api.naming.listener.EventListener;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
-import com.kuma.tools.dynamicHot.notify.netty.NettyClient;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 import java.net.InetAddress;
-import java.util.List;
 import java.util.Properties;
 
 @Component
@@ -29,11 +26,8 @@ public class NacosRegister implements Register {
     private String serverName;
     @Value("${spring.regist.namespace:public}")
     private String namespace;
-    @Value("${spring.netty.server.port:8088}")
+    @Value("${server.port:8080}")
     private int port;
-
-    @Autowired
-    NettyClient nettyClient;
 
     private NamingService namingService;
     private String localHost;
@@ -44,46 +38,22 @@ public class NacosRegister implements Register {
         try {
             InetAddress inetAddress = InetAddress.getLocalHost();
             localHost = inetAddress.getHostAddress();
-
-            channelInitialize();
-            watchService(serverName);
+            register();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-    private void channelInitialize() {
+    private void register() {
         Properties properties = new Properties();
         properties.put("serverAddr", serverAddr);
         properties.put("namespace", namespace);
         try {
             namingService = NamingFactory.createNamingService(properties);
-            List<Instance> instanceList = namingService.getAllInstances(serverName);
-            for (Instance instance : instanceList) {
-                nettyClient.connect(instance.getIp(), port);
-            }
+            namingService.registerInstance(serverName, localHost, port);
         } catch (Exception e) {
             e.printStackTrace();
         }
-    }
-
-    /**
-     * 监听netty的上下线
-     */
-    public void watchService(String serviceName) throws Exception {
-        namingService.subscribe(serviceName, new EventListener() {
-            @Override
-            public void onEvent(Event event) {
-                if (event instanceof NamingEvent) {
-                    System.out.println("服务变更");
-                    NamingEvent namingEvent = (NamingEvent) event;
-                    List<Instance> instanceList = namingEvent.getInstances();
-                    for (Instance instance : instanceList) {
-                        nettyClient.connect(instance.getIp(), port);
-                    }
-                }
-            }
-        });
     }
 
     @PreDestroy

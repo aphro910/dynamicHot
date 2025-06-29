@@ -1,12 +1,18 @@
 package com.kuma.tools.dynamicHot.notify.netty;
 
+import com.kuma.tools.dynamicHot.utils.CompressUtil;
+import io.netty.buffer.ByteBuf;
+import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
+import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.nio.charset.StandardCharsets;
 
 // 客户端业务处理器
 public class ClientHandler extends SimpleChannelInboundHandler<String> {
@@ -29,8 +35,15 @@ public class ClientHandler extends SimpleChannelInboundHandler<String> {
         if (evt instanceof IdleStateEvent) {
             IdleStateEvent event = (IdleStateEvent) evt;
             //发送心跳消息
-            TextWebSocketFrame textWebSocketFrame = new TextWebSocketFrame("pingpong");
-            ctx.writeAndFlush(textWebSocketFrame);
+            try {
+                byte[] ping = CompressUtil.compress("pingpong");
+                ByteBuf buffer = Unpooled.wrappedBuffer(ping);
+                BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(buffer);
+                ctx.writeAndFlush(binaryWebSocketFrame);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
         } else {
             super.userEventTriggered(ctx, evt);
         }
