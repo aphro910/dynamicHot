@@ -7,8 +7,14 @@ import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.HttpServerCodec;
 import io.netty.handler.codec.http.websocketx.WebSocketServerProtocolHandler;
 import io.netty.handler.stream.ChunkedWriteHandler;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class WSServerChannelInitialzer extends ChannelInitializer<SocketChannel> {
+
+    @Autowired
+    private WSServerHandler wsServerHandler;
 
     @Override
     protected void initChannel(SocketChannel ch) {
@@ -22,7 +28,7 @@ public class WSServerChannelInitialzer extends ChannelInitializer<SocketChannel>
         pipeline.addLast(new WebSocketServerProtocolHandler("/ws"));
 
         // 添加自定义的处理器
-        pipeline.addLast(new WSServerHandler());
+        pipeline.addLast(wsServerHandler);
     }
 
 }

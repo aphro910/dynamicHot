@@ -7,34 +7,41 @@ import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
 import lombok.extern.log4j.Log4j2;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
+
+import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 
 @Log4j2
+@Component
 public class WSNettyServer {
 
-    private static class SingletionWSServer {
-        static final WSNettyServer instance = new WSNettyServer();
-    }
+    @Autowired
+    private WSServerChannelInitialzer serverChannelInitialzer;
 
-    public static WSNettyServer getInstance() {
-        return SingletionWSServer.instance;
-    }
+    @Value("${spring.server.netty.port:8088}")
+    private int port;
 
     private EventLoopGroup mainGroup;
     private EventLoopGroup subGroup;
     private ServerBootstrap server;
     private ChannelFuture future;
 
-    public WSNettyServer() {
+    @PostConstruct
+    public void init() {
         mainGroup = new NioEventLoopGroup(1);
         subGroup = new NioEventLoopGroup(5);
         server = new ServerBootstrap();
+        start(port);
     }
 
     public void start(int port) {
         server.group(mainGroup, subGroup)
                 .channel(NioServerSocketChannel.class)
                 .localAddress(port)
-                .childHandler(new WSServerChannelInitialzer());
+                .childHandler(serverChannelInitialzer);
 
         this.future = server.bind().addListener(new ChannelFutureListener() {
             @Override
@@ -48,6 +55,7 @@ public class WSNettyServer {
         });
     }
 
+    @PreDestroy
     public void stop() {
         this.future.channel().closeFuture().addListener(new ChannelFutureListener() {
             @Override

@@ -6,6 +6,7 @@ import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
 import com.kuma.tools.dynamicHot.cache.RedisCache;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
 import com.kuma.tools.dynamicHot.notify.Notify;
+import com.kuma.tools.dynamicHot.notify.netty.ClientHandler;
 import com.kuma.tools.dynamicHot.notify.netty.NettyClient;
 import com.kuma.tools.dynamicHot.notify.register.NacosRegister;
 import com.kuma.tools.dynamicHot.timer.HotKeyReport;
@@ -34,6 +35,10 @@ public class HotKeyAutoConfiguration {
     public HotKeyContext HotKeyContext() {
         return new HotKeyContext();
     }
+
+    @Bean
+    @ConditionalOnMissingBean
+    public ClientHandler ClientHandler() { return new ClientHandler(); }
 
     @Bean
     @ConditionalOnMissingBean

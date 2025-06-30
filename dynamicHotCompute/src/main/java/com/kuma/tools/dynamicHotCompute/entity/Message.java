@@ -1,4 +1,4 @@
-package com.kuma.tools.dynamicHot.notify;
+package com.kuma.tools.dynamicHotCompute.entity;
 
 import lombok.Data;
 

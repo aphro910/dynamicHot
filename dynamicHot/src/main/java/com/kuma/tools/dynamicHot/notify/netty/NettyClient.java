@@ -21,11 +21,11 @@ import io.netty.handler.stream.ChunkedWriteHandler;
 import io.netty.handler.timeout.IdleStateHandler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -34,6 +34,9 @@ import java.util.stream.Collectors;
 
 @Component
 public class NettyClient {
+
+    @Autowired
+    private ClientHandler clientHandler;
 
     private static final Logger log = LoggerFactory.getLogger(NettyClient.class);
     private static Map<String, Channel> connections = new ConcurrentHashMap<>();
@@ -79,7 +82,7 @@ public class NettyClient {
                                 8192
                         ));
                         // 添加业务处理器
-                        pipeline.addLast(new ClientHandler());
+                        pipeline.addLast(clientHandler);
 
                     }
                 });
@@ -97,16 +100,24 @@ public class NettyClient {
 
     public void send(Map<String, Integer> data) {
         Set<String> keySet = connections.keySet();
+        long timestamp = System.currentTimeMillis();
         List<String> hostList = keySet.stream().sorted().collect(Collectors.toList());
+        if (hostList.isEmpty()) {
+            return;
+        }
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
             String key = entry.getKey();
             Integer count = entry.getValue();
             int hash = key.hashCode() % hostList.size();
             String host = hostList.get(hash);
             Channel channel = connections.get(host);
+            if (channel == null) {
+                return;
+            }
             Message message = new Message();
             message.setKey(key);
             message.setCount(count);
+            message.setTimestamp(timestamp);
             try {
                 byte[] binaryData = CompressUtil.compress(JSONUtil.toJsonStr(message));
                 ByteBuf buffer = Unpooled.wrappedBuffer(binaryData);

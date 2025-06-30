@@ -7,20 +7,20 @@ import com.alibaba.nacos.api.naming.listener.EventListener;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.kuma.tools.dynamicHot.notify.netty.NettyClient;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
-import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
-import java.net.InetAddress;
 import java.util.List;
 import java.util.Properties;
 
 @Component
 @ConditionalOnProperty(name = "spring.dynamic.hotkey.register.type", havingValue = "nacos", matchIfMissing = true)
+@Log4j2
 public class NacosRegister implements Register {
 
     @Value("${spring.cloud.nacos.config.server-addr:212.129.223.152:8848}")
@@ -36,15 +36,11 @@ public class NacosRegister implements Register {
     NettyClient nettyClient;
 
     private NamingService namingService;
-    private String localHost;
 
     @Override
     @PostConstruct
     public void initChannel() {
         try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            localHost = inetAddress.getHostAddress();
-
             channelInitialize();
             watchService(serverName);
         } catch (Exception e) {
@@ -74,13 +70,10 @@ public class NacosRegister implements Register {
         namingService.subscribe(serviceName, new EventListener() {
             @Override
             public void onEvent(Event event) {
-                if (event instanceof NamingEvent) {
-                    System.out.println("服务变更");
-                    NamingEvent namingEvent = (NamingEvent) event;
-                    List<Instance> instanceList = namingEvent.getInstances();
-                    for (Instance instance : instanceList) {
-                        nettyClient.connect(instance.getIp(), port);
-                    }
+                List<Instance> instanceList = ((NamingEvent) event).getInstances();
+                log.info("instance changed, current instances: {}", instanceList);
+                for (Instance instance : instanceList) {
+                    nettyClient.connect(instance.getIp(), port);
                 }
             }
         });

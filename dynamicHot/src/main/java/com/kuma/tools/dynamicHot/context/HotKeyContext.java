@@ -14,7 +14,6 @@ import java.util.concurrent.locks.ReentrantReadWriteLock;
 @Component
 public class HotKeyContext {
     public ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
-    public long timestamp = System.currentTimeMillis();
     public Map<String, Integer> keyMap;
     public Set<String> hotKey = new HashSet<>();
 
