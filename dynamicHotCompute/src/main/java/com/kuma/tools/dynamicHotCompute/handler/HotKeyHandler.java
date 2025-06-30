@@ -9,18 +9,26 @@ import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.ThreadPoolExecutor;
 
 @Component
 public class HotKeyHandler {
 
     private Map<String, Deque<Message>> keyMap;
+
+    @Autowired
+    @Qualifier("hotKeyComputeThreadPool")
+    private ThreadPoolTaskExecutor hotKeyComputeExecutor;
 
     @Value("${spring.dynamic.hotkey.compute.maxKeySize:-1}")
     private Integer maxKeySize;
@@ -53,20 +61,24 @@ public class HotKeyHandler {
     public void compute() {
         List<String> hotKeyList = new ArrayList<>();
         for (Map.Entry<String, Deque<Message>> entry : keyMap.entrySet()) {
-            Deque<Message> messages = entry.getValue();
-            int count = 0;
-            for (Message message : messages) {
-                if (System.currentTimeMillis() - timeRange <= message.getTimestamp()) {
-                    count += message.getCount();
-                    if (count >= hotCount) {
-                        hotKeyList.add(message.getKey());
-                        break;
+            hotKeyComputeExecutor.execute(new Runnable() {
+                @Override
+                public void run() {
+                    Deque<Message> messages = entry.getValue();
+                    int count = 0;
+                    for (Message message : messages) {
+                        if (System.currentTimeMillis() - timeRange <= message.getTimestamp()) {
+                            count += message.getCount();
+                            if (count >= hotCount) {
+                                hotKeyList.add(message.getKey());
+                                break;
+                            }
+                        }
+
                     }
                 }
-
-            }
+            });
         }
-
         if (!hotKeyList.isEmpty()) {
             for (Channel channel : ChannelContext.channels) {
                 try {
