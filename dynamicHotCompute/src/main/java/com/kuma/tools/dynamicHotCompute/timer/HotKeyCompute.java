@@ -11,7 +11,7 @@ public class HotKeyCompute {
     @Autowired
     private HotKeyHandler hotKeyHandler;
 
-    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.compute.initial-delay:1000}",
+    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.compute.initial-delay:100}",
             fixedRateString = "${spring.dynamic.hotkey.compute.fixed-rate:500}")
     public void compute() {
         hotKeyHandler.compute();

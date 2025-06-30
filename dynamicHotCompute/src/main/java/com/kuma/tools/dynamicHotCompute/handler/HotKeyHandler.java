@@ -19,7 +19,8 @@ import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.Future;
 
 @Component
 public class HotKeyHandler {
@@ -60,8 +61,9 @@ public class HotKeyHandler {
 
     public void compute() {
         List<String> hotKeyList = new ArrayList<>();
+        List<Future<?>> futures = new ArrayList<>();
         for (Map.Entry<String, Deque<Message>> entry : keyMap.entrySet()) {
-            hotKeyComputeExecutor.execute(new Runnable() {
+            Future<?> future = hotKeyComputeExecutor.submit(new Runnable() {
                 @Override
                 public void run() {
                     Deque<Message> messages = entry.getValue();
@@ -78,6 +80,14 @@ public class HotKeyHandler {
                     }
                 }
             });
+            futures.add(future);
+        }
+        for (Future<?> future : futures) {
+            try {
+                future.get();
+            } catch (InterruptedException | ExecutionException e) {
+                e.printStackTrace();
+            }
         }
         if (!hotKeyList.isEmpty()) {
             for (Channel channel : ChannelContext.channels) {

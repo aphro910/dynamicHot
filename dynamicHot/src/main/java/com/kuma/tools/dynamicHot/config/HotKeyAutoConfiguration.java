@@ -1,9 +1,7 @@
 package com.kuma.tools.dynamicHot.config;
 
 import com.kuma.tools.dynamicHot.aspect.HotKeyDetect;
-import com.kuma.tools.dynamicHot.cache.AllCache;
 import com.kuma.tools.dynamicHot.cache.CaffeineLocalCache;
-import com.kuma.tools.dynamicHot.cache.RedisCache;
 import com.kuma.tools.dynamicHot.context.HotKeyContext;
 import com.kuma.tools.dynamicHot.notify.Notify;
 import com.kuma.tools.dynamicHot.notify.netty.ClientHandler;
@@ -65,20 +63,5 @@ public class HotKeyAutoConfiguration {
     public CaffeineLocalCache CaffeineLocalCache() {
         return new CaffeineLocalCache();
     }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "redis")
-    public RedisCache RedisCache() {
-        return new RedisCache();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    @ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "all")
-    public AllCache AllCache() {
-        return new AllCache();
-    }
-
 
 }

@@ -16,7 +16,7 @@ public class HotKeyReport {
     @Autowired
     private HotKeyContext hotKeyContext;
 
-    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.collect.initial-delay:1000}",
+    @Scheduled(initialDelayString = "${spring.dynamic.hotkey.collect.initial-delay:100}",
             fixedRateString = "${spring.dynamic.hotkey.collect.fixed-rate:500}")
     public void report() {
         if (!hotKeyContext.keyMap.isEmpty()) {

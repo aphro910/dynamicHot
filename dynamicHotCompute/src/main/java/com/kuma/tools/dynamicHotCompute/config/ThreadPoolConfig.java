@@ -14,7 +14,7 @@ public class ThreadPoolConfig {
         ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
         taskExecutor.setCorePoolSize(5);
         taskExecutor.setMaxPoolSize(10);
-        taskExecutor.setQueueCapacity(500);
+        taskExecutor.setQueueCapacity(1000);
         taskExecutor.setKeepAliveSeconds(60);
         taskExecutor.setThreadNamePrefix("hotKeyComputeThreadPool");
         taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
