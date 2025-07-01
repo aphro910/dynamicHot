@@ -11,7 +11,7 @@ DynamicHot是一个基于Netty的轻量化hot-key监测系统，用户可通过�
 ### How
 
 本项目设计思路参考了京东的hotkey项目，得到了不少启发。项目地址如下：
-https://gitee.com/jd-platform-opensource/hotkey
+> https://gitee.com/jd-platform-opensource/hotkey
 
  **Client:** 
 通过注解@DynamicHot对接口进行增强，包含两个参数tableName、key,tableName表示需要查询的数据表名称(仅做区分，不一定为真实表名),key表示该请求中需要查询数据的unique key(支持spel表达式)  
