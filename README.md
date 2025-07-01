@@ -39,7 +39,7 @@ client的汇报数据为{key:"item_123456",count:80,timestamp:123456789},{key:"i
 server计算时，判断 {当前时间戳}-{设定的时间窗口} <= timestamp , true=> totalcount += count;若totalcount >= {hot-key阈值},则通知Client客户端进行更新  
 
 
-提供了一些配置参数以适配各方面的需求：
+提供了一些配置参数以适配各方面的需求:  
 spring.dynamic.hotkey.report.maxSize//Client的本地request key缓存keyMap的大小，默认为-1(不限)，大于0时，当keymap的size大于该值，则会通过LRU算法进行淘汰  
 spring.dynamic.hotkey.collect.initial-delay//Client定时任务启动后等待时间，单位ms  
 spring.dynamic.hotkey.collect.fixed-rate//Client定时任务执行频率，单位ms  
