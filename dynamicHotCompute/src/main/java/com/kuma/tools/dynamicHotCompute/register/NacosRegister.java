@@ -20,7 +20,7 @@ import java.util.Properties;
 @ConditionalOnProperty(name = "spring.dynamic.hotkey.register.type", havingValue = "nacos", matchIfMissing = true)
 public class NacosRegister implements Register {
 
-    @Value("${spring.cloud.nacos.config.server-addr:212.129.223.152:8848}")
+    @Value("${spring.cloud.nacos.config.server-addr:127.0.0.1:8848}")
     private String serverAddr;
     @Value("${spring.regist.servername:hotkey-netty}")
     private String serverName;
