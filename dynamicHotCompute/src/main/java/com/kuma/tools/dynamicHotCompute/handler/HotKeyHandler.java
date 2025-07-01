@@ -18,6 +18,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import java.io.IOException;
 import java.util.*;
+import java.util.concurrent.Callable;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.Future;
@@ -50,6 +51,10 @@ public class HotKeyHandler {
         }
     }
 
+    public boolean isEmpty() {
+        return keyMap.isEmpty();
+    }
+
     public void add(Message message) {
         String key = message.getKey();
         keyMap.computeIfAbsent(key, k -> new ArrayDeque<>()).addFirst(message);
@@ -61,34 +66,37 @@ public class HotKeyHandler {
 
     public void compute() {
         List<String> hotKeyList = new ArrayList<>();
-        List<Future<?>> futures = new ArrayList<>();
-        for (Map.Entry<String, Deque<Message>> entry : keyMap.entrySet()) {
-            Future<?> future = hotKeyComputeExecutor.submit(new Runnable() {
-                @Override
-                public void run() {
-                    Deque<Message> messages = entry.getValue();
-                    int count = 0;
-                    for (Message message : messages) {
-                        if (System.currentTimeMillis() - timeRange <= message.getTimestamp()) {
-                            count += message.getCount();
-                            if (count >= hotCount) {
-                                hotKeyList.add(message.getKey());
-                                break;
-                            }
-                        }
+        List<Future<List<String>>> futures = new ArrayList<>();
+        List<List<Deque<Message>>> dequeList = new ArrayList<>(10);
+        for (int i = 0; i < 10; i++) {
+            dequeList.add(new ArrayList<>());
+        }
 
-                    }
+        for (Map.Entry<String, Deque<Message>> entry : keyMap.entrySet()) {
+            String key = entry.getKey();
+            int bucket = Math.abs(key.hashCode()) % 10;
+            dequeList.get(bucket).add(entry.getValue());
+        }
+
+        for (List<Deque<Message>> item : dequeList) {
+            Future<List<String>> future = hotKeyComputeExecutor.submit(new Callable<List<String>>() {
+                @Override
+                public List<String> call() throws Exception {
+                    return executeBatch(item);
                 }
             });
             futures.add(future);
         }
-        for (Future<?> future : futures) {
+
+        for (Future<List<String>> future : futures) {
             try {
-                future.get();
-            } catch (InterruptedException | ExecutionException e) {
+                List<String> hotkeys = future.get();
+                hotKeyList.addAll(hotkeys);
+            } catch (ExecutionException | InterruptedException e) {
                 e.printStackTrace();
             }
         }
+
         if (!hotKeyList.isEmpty()) {
             for (Channel channel : ChannelContext.channels) {
                 try {
@@ -100,5 +108,27 @@ public class HotKeyHandler {
                 }
             }
         }
+    }
+
+    private List<String> executeBatch(List<Deque<Message>> batch) {
+        List<String> hotKeyList = new ArrayList<>();
+        for (Deque<Message> messages : batch) {
+            if (System.currentTimeMillis() - timeRange > messages.peekFirst().getTimestamp()) {
+                break;
+            }
+            int count = 0;
+            for (Message message : messages) {
+                if (System.currentTimeMillis() - timeRange <= message.getTimestamp()) {
+                    count += message.getCount();
+                    if (count >= hotCount) {
+                        hotKeyList.add(message.getKey());
+                        break;
+                    }
+                } else {
+                    break;
+                }
+            }
+        }
+        return hotKeyList;
     }
 }
