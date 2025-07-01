@@ -52,7 +52,7 @@ spring.dynamic.hotkey.compute.hotCount//HotKey阈值，默认5000
 
 spring.server.netty.port//Netty长连接端口
 
- **Others** 
+ **Others:** 
 京东选择的注册中心是etcd，而我上家公司则是采用的Nacos，其他公司例如携程采用的Apollo，甚至一些自研的，不太可能为了一个组件特地引入新的注册中心，因此考虑对其做一个可定制化，自行选择注册中心。目前的话只实现了Nacos的方案，后续可能会添加别的。
 
 仅个人开发，经验有限，难免考虑不周，有好想法欢迎交流！
