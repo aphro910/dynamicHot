@@ -108,7 +108,7 @@ public class NettyClient {
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
             String key = entry.getKey();
             Integer count = entry.getValue();
-            int hash = key.hashCode() % hostList.size();
+            int hash = Math.abs(key.hashCode()) % hostList.size();
             String host = hostList.get(hash);
             Channel channel = connections.get(host);
             if (channel == null) {
