@@ -20,7 +20,7 @@ public User getUser(Long userId){
 ##client发送数据时会根据每个request key进行hashcode取模，选择Netty server集群中对应的server进行发送，即每一个request key都有一个相应的server，保证该key在全局视图的一致性##
 
 
- _Server_ 
+ _Server:_ 
 Server收到Client汇报的数据，保存至本地JVM内存进行统计，定期对统计数据进行计算，计算逻辑为：汇报时间在设定的窗口时间内，request key被统计的总次数大于等于设定的hot-key阈值。
 同样举个例子
 e.g：
