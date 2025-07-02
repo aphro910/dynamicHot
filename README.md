@@ -65,7 +65,7 @@ spring.server.netty.port//Netty长连接端口
 ** 
 
 step1：把项目clone到你的本地。  
-step2：打开项目，将目录dynamicHot下的文件通过maven install打包
+step2：打开项目，将目录dynamicHot下的文件通过maven install打包  
 step3：在你的项目中引入该项目，并在需要增强的方法上使用@DynamicHot()注解
 
 ```
@@ -78,6 +78,6 @@ step3：在你的项目中引入该项目，并在需要增强的方法上使用
 step4：将另外一个dynamicHotCompute项目配置打包(请提前配置注册中心地址)，直接启动运行即可
 
 
-### 写在最后
+### Last
 
 从六月份开始做，仅个人开发，经验有限，跟各路大神完全没法比，各种方案难免考虑不周，有好想法欢迎交流！
