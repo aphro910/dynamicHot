@@ -98,14 +98,12 @@ public class HotKeyHandler {
         }
 
         if (!hotKeyList.isEmpty()) {
-            for (Channel channel : ChannelContext.channels) {
-                try {
-                    byte[] binaryData = CompressUtil.compress(JSONUtil.toJsonStr(hotKeyList));
-                    ByteBuf buffer = Unpooled.wrappedBuffer(binaryData);
-                    channel.writeAndFlush(new BinaryWebSocketFrame(buffer));
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+            try {
+                byte[] binaryData = CompressUtil.compress(JSONUtil.toJsonStr(hotKeyList));
+                ByteBuf buffer = Unpooled.wrappedBuffer(binaryData);
+                ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+            } catch (IOException e) {
+                e.printStackTrace();
             }
         }
     }

@@ -27,7 +27,7 @@ public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocket
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
-        ChannelContext.channels.add(ctx.channel());
+        ChannelContext.channelGroup.add(ctx.channel());
         log.info("channel added, channel: " + ctx.channel());
     }
 
@@ -52,7 +52,7 @@ public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocket
     @Override
     public void handlerRemoved(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
-        ChannelContext.channels.remove(channel);
+        ChannelContext.channelGroup.remove(channel);
         log.info("channel:{} Removed...", channel.id());
     }
 
