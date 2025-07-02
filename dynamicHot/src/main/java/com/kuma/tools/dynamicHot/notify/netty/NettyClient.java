@@ -79,7 +79,7 @@ public class NettyClient {
                                 null,
                                 true,
                                 new DefaultHttpHeaders(),
-                                5 * 1024 * 1024
+                                65536
                         ));
                         // 添加业务处理器
                         pipeline.addLast(clientHandler);
