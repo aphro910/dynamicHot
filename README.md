@@ -58,4 +58,26 @@ spring.server.netty.port//Netty长连接端口
  **Others:** 
 京东选择的注册中心是etcd，而我上家公司则是采用的Nacos，其他公司例如携程采用的Apollo，甚至一些自研的，不太可能为了一个组件特地引入新的注册中心，因此考虑对其做一个可定制化，自行选择注册中心。目前的话只实现了Nacos的方案，后续可能会添加别的。
 
-仅个人开发，经验有限，难免考虑不周，有好想法欢迎交流！
+ **
+
+### How To Start
+
+** 
+
+step1：把项目clone到你的本地。  
+step2：打开项目，将目录dynamicHot下的文件通过maven install打包
+step3：在你的项目中引入该项目，并在需要增强的方法上使用@DynamicHot()注解
+
+```
+<dependency>
+    <groupId>com.kuma.tools</groupId>
+    <artifactId>dynamicHot</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+</dependency>
+```
+step4：将另外一个dynamicHotCompute项目配置打包(请提前配置注册中心地址)，直接启动运行即可
+
+
+### 写在最后
+
+从六月份开始做，仅个人开发，经验有限，跟各路大神完全没法比，各种方案难免考虑不周，有好想法欢迎交流！
