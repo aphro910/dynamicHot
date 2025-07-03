@@ -11,37 +11,61 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.WebSocketFrame;
 import io.netty.handler.timeout.IdleStateEvent;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 // 客户端业务处理器
 @Component
 @ChannelHandler.Sharable
-public class ClientHandler extends SimpleChannelInboundHandler<BinaryWebSocketFrame> {
+public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
 
     @Autowired
     private HotKeyContext hotKeyContext;
 
+    private Map<String,List<Chunk>> sessionMap = new ConcurrentHashMap<>();
+
     private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, BinaryWebSocketFrame msg) {
-        ByteBuf content = msg.content();
-        try {
+    protected void channelRead0(ChannelHandlerContext ctx, WebSocketFrame msg) {
+        if (msg instanceof BinaryWebSocketFrame) {
+            ByteBuf content = msg.content();
             byte[] bytes = new byte[content.readableBytes()];
             content.readBytes(bytes); // 读取为 byte[]
-            String str = CompressUtil.decompress(bytes);
-            List<String> hotKeyList = JSONUtil.toList(JSONUtil.parseArray(str), String.class);
-            hotKeyContext.hotKey = new HashSet<>(hotKeyList);
-            log.info("hot_key updated: {}", hotKeyContext.hotKey);
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                String str = CompressUtil.decompress(bytes);
+                Chunk chunk = JSONUtil.toBean(str, Chunk.class);
+                sessionMap.computeIfAbsent(chunk.getSessionId(), k -> new ArrayList<>()).add(chunk);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        } else if (msg instanceof TextWebSocketFrame) {
+            String content = ((TextWebSocketFrame) msg).text();
+            ChunkInfo chunkInfo = JSONUtil.toBean(content, ChunkInfo.class);
+            if (chunkInfo.getType().equals(Constants.CHUNK_START)) {
+                sessionMap.putIfAbsent(chunkInfo.getSessionId(), new ArrayList<>());
+            } else {
+                List<Chunk> chunkList = sessionMap.get(chunkInfo.getSessionId());
+                //数据组装
+                List<String> hotKeys = new ArrayList<>();
+                for (Chunk chunk : chunkList) {
+                    hotKeys.addAll(chunk.getData());
+                }
+                hotKeyContext.hotKey = new HashSet<>(hotKeys);
+                log.info("hot_key updated: {}", hotKeyContext.hotKey);
+            }
         }
     }
 
