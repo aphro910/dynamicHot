@@ -117,7 +117,7 @@ public class HotKeyHandler {
                 List<String> hotkeys = future.get();
                 hotKeyList.addAll(hotkeys);
             } catch (ExecutionException | InterruptedException e) {
-                e.printStackTrace();
+                return;
             }
         }
         this.hotKeyList = hotKeyList;
@@ -196,9 +196,9 @@ public class HotKeyHandler {
 
     @PreDestroy
     public void stop() {
+        isStop = true;
         executor.shutdown();
         hotKeyComputeExecutor.shutdown();
-        isStop = true;
 
     }
 }
