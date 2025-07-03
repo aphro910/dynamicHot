@@ -2,13 +2,17 @@ package com.kuma.tools.dynamicHotCompute.handler;
 
 import cn.hutool.json.JSONUtil;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
+import com.kuma.tools.dynamicHotCompute.consts.Constants;
 import com.kuma.tools.dynamicHotCompute.context.ChannelContext;
+import com.kuma.tools.dynamicHotCompute.entity.Chunk;
+import com.kuma.tools.dynamicHotCompute.entity.ChunkInfo;
 import com.kuma.tools.dynamicHotCompute.entity.Message;
 import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -16,17 +20,16 @@ import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
-import java.util.concurrent.Callable;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Future;
+import java.util.concurrent.*;
 
 @Component
 public class HotKeyHandler {
 
     private Map<String, Deque<Message>> keyMap;
+    private List<String> hotKeyList;
 
     @Autowired
     @Qualifier("hotKeyComputeThreadPool")
@@ -39,6 +42,10 @@ public class HotKeyHandler {
     @Value("${spring.dynamic.hotkey.compute.hotCount:5000}")
     private int hotCount;
 
+    private boolean isStop = false;
+    private static final int CHUNK_SIZE = 500; // 每块500个键
+    private ExecutorService executor;
+
     @PostConstruct
     public void initMap() {
         if (maxKeySize > 0) {
@@ -49,6 +56,15 @@ public class HotKeyHandler {
             //不设置最大key size,只保证数据写入的原子性,可能有OOM风险
             keyMap = new ConcurrentHashMap<>();
         }
+        executor = Executors.newSingleThreadExecutor();
+        executor.execute(new Runnable() {
+            @Override
+            public void run() {
+                while (!isStop) {
+                    compute();
+                }
+            }
+        });
     }
 
     public boolean isEmpty() {
@@ -65,6 +81,14 @@ public class HotKeyHandler {
     }
 
     public void compute() {
+        if (keyMap.isEmpty()) {
+            try {
+                Thread.sleep(100);
+                return;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         List<String> hotKeyList = new ArrayList<>();
         List<Future<List<String>>> futures = new ArrayList<>();
         List<List<Deque<Message>>> dequeList = new ArrayList<>(10);
@@ -96,27 +120,25 @@ public class HotKeyHandler {
                 e.printStackTrace();
             }
         }
+        this.hotKeyList = hotKeyList;
+    }
 
+    public void push() {
         if (!hotKeyList.isEmpty()) {
-            try {
-                byte[] binaryData = CompressUtil.compress(JSONUtil.toJsonStr(hotKeyList));
-                ByteBuf buffer = Unpooled.wrappedBuffer(binaryData);
-                ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            sendHotKeysInChunks(hotKeyList);
         }
     }
 
     private List<String> executeBatch(List<Deque<Message>> batch) {
+        long nowTime = System.currentTimeMillis();
         List<String> hotKeyList = new ArrayList<>();
         for (Deque<Message> messages : batch) {
-            if (System.currentTimeMillis() - timeRange > messages.peekFirst().getTimestamp()) {
+            if (messages.isEmpty()) {
                 break;
             }
             int count = 0;
             for (Message message : messages) {
-                if (System.currentTimeMillis() - timeRange <= message.getTimestamp()) {
+                if (nowTime - timeRange <= message.getTimestamp()) {
                     count += message.getCount();
                     if (count >= hotCount) {
                         hotKeyList.add(message.getKey());
@@ -128,5 +150,55 @@ public class HotKeyHandler {
             }
         }
         return hotKeyList;
+    }
+
+    // 分块发送热键列表
+    private void sendHotKeysInChunks(List<String> hotKeyList) {
+        String sessionId = UUID.randomUUID().toString();
+        int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
+
+        // 发送开始标记
+        ChunkInfo chunkStart = new ChunkInfo();
+        chunkStart.setType(Constants.CHUNK_START);
+        chunkStart.setSessionId(sessionId);
+        chunkStart.setChunkSize(totalChunks);
+        ChannelContext.channelGroup.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(chunkStart)));
+
+        // 分块发送数据
+        for (int i = 0; i < totalChunks; i++) {
+            int start = i * CHUNK_SIZE;
+            int end = Math.min(start + CHUNK_SIZE, hotKeyList.size());
+            List<String> chunkList = hotKeyList.subList(start, end);
+
+            // 构建分块数据
+            Chunk chunkData = new Chunk();
+            chunkData.setSessionId(sessionId);
+            chunkData.setIndex(i);
+            chunkData.setTotal(totalChunks);
+            chunkData.setData(chunkList);
+
+            try {
+                // 压缩并发送
+                byte[] compressed = CompressUtil.compress(JSONUtil.toJsonStr(chunkData));
+                ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
+                ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+
+        // 发送结束标记
+        ChunkInfo chunkEnd = new ChunkInfo();
+        chunkEnd.setType(Constants.CHUNK_END);
+        chunkEnd.setSessionId(sessionId);
+        ChannelContext.channelGroup.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(chunkEnd)));
+    }
+
+    @PreDestroy
+    public void stop() {
+        executor.shutdown();
+        hotKeyComputeExecutor.shutdown();
+        isStop = true;
+
     }
 }

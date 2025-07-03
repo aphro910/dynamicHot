@@ -19,7 +19,7 @@ public class CaffeineConfig {
         CaffeineCacheManager cacheManager = new CaffeineCacheManager();
 
         cacheManager.registerCustomCache("hot", Caffeine.newBuilder()
-                .expireAfterWrite(30,TimeUnit.SECONDS)
+                .expireAfterWrite(10,TimeUnit.SECONDS)
                 .maximumSize(10000)
                 .build());
         return cacheManager;
