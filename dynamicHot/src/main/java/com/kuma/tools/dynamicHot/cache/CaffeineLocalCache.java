@@ -6,7 +6,6 @@ import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 @Component
-@ConditionalOnProperty(name = "spring.dynamic.hotkey.cache.type", havingValue = "local")
 public class CaffeineLocalCache implements Caches{
     
     @Cacheable(value = "hot", key = "#key")
