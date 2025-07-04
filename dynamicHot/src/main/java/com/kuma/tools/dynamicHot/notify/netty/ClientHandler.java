@@ -63,7 +63,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
                 for (Chunk chunk : chunkList) {
                     hotKeys.addAll(chunk.getData());
                 }
-                hotKeyContext.hotKey = new HashSet<>(hotKeys);
+
+                hotKeyContext.hotKey.put(ctx.channel().id().asShortText(),new HashSet<>(hotKeys));
                 log.info("hot_key updated: {}", hotKeyContext.hotKey);
             }
         }
@@ -98,6 +99,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     public void handlerRemoved(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         NettyClient.remove(channel);
+        hotKeyContext.hotKey.remove(channel.id().asShortText());
         log.info("channel:{} Removed", channel.id());
     }
 }

@@ -14,6 +14,8 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
+import java.util.Map;
+import java.util.Set;
 
 @Aspect
 @Component
@@ -81,7 +83,11 @@ public class HotKeyDetect {
     }
 
     private boolean isHot(String key) {
-        return hotKeyContext.hotKey.contains(key);
+        for (Map.Entry<String, Set<String>> entry : hotKeyContext.hotKey.entrySet()) {
+            if (entry.getValue().contains(key)) {
+                return true;
+            }
+        }
+        return false;
     }
-
 }
