@@ -20,10 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 
 // 客户端业务处理器
@@ -63,9 +60,14 @@ public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
                 for (Chunk chunk : chunkList) {
                     hotKeys.addAll(chunk.getData());
                 }
+                Set<String> oldKey = hotKeyContext.partitionHotKey.getOrDefault(ctx.channel().id().asShortText(), Collections.emptySet());
+                Set<String> newKey = new HashSet<>(hotKeys);
+                hotKeyContext.partitionHotKey.put(ctx.channel().id().asShortText(),newKey);
+                hotKeyContext.globalHotKey.removeAll(oldKey);
+                hotKeyContext.globalHotKey.addAll(newKey);
 
-                hotKeyContext.hotKey.put(ctx.channel().id().asShortText(),new HashSet<>(hotKeys));
-                log.info("hot_key updated: {}", hotKeyContext.hotKey);
+                sessionMap.remove(chunkInfo.getSessionId());
+                log.info("hot_key updated: {}", hotKeyContext.globalHotKey);
             }
         }
     }
@@ -99,7 +101,9 @@ public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
     public void handlerRemoved(ChannelHandlerContext ctx) {
         Channel channel = ctx.channel();
         NettyClient.remove(channel);
-        hotKeyContext.hotKey.remove(channel.id().asShortText());
+        Set<String> oldKey = hotKeyContext.partitionHotKey.getOrDefault(channel.id().asShortText(), Collections.emptySet());
+        hotKeyContext.partitionHotKey.remove(channel.id().asShortText());
+        hotKeyContext.globalHotKey.removeAll(oldKey);
         log.info("channel:{} Removed", channel.id());
     }
 }

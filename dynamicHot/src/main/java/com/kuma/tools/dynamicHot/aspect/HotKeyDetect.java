@@ -83,11 +83,6 @@ public class HotKeyDetect {
     }
 
     private boolean isHot(String key) {
-        for (Map.Entry<String, Set<String>> entry : hotKeyContext.hotKey.entrySet()) {
-            if (entry.getValue().contains(key)) {
-                return true;
-            }
-        }
-        return false;
+        return hotKeyContext.globalHotKey.contains(key);
     }
 }
