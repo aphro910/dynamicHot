@@ -10,13 +10,11 @@ import com.kuma.tools.dynamicHotCompute.entity.Message;
 import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
-import io.netty.channel.Channel;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
@@ -33,7 +31,10 @@ public class HotKeyHandler {
 
     @Autowired
     @Qualifier("hotKeyComputeThreadPool")
-    private ThreadPoolTaskExecutor hotKeyComputeExecutor;
+    private ExecutorService hotKeyComputeExecutor;
+    @Autowired
+    @Qualifier("singleThreadPool")
+    private ExecutorService singleExecutor;
 
     @Value("${spring.dynamic.hotkey.compute.maxKeySize:-1}")
     private Integer maxKeySize;
@@ -44,7 +45,7 @@ public class HotKeyHandler {
 
     private boolean isStop = false;
     private static final int CHUNK_SIZE = 500; // 每块500个键
-    private ExecutorService executor;
+
 
     @PostConstruct
     public void initMap() {
@@ -56,8 +57,7 @@ public class HotKeyHandler {
             //不设置最大key size,只保证数据写入的原子性,可能有OOM风险
             keyMap = new ConcurrentHashMap<>();
         }
-        executor = Executors.newSingleThreadExecutor();
-        executor.execute(new Runnable() {
+        singleExecutor.execute(new Runnable() {
             @Override
             public void run() {
                 while (!isStop) {
@@ -197,7 +197,7 @@ public class HotKeyHandler {
     @PreDestroy
     public void stop() {
         isStop = true;
-        executor.shutdown();
+        singleExecutor.shutdown();
         hotKeyComputeExecutor.shutdown();
 
     }

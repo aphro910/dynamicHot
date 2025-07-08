@@ -2,23 +2,21 @@ package com.kuma.tools.dynamicHotCompute.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.scheduling.concurrent.ThreadPoolTaskExecutor;
 
-import java.util.concurrent.ThreadPoolExecutor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 @Configuration
 public class ThreadPoolConfig {
 
     @Bean(value = "hotKeyComputeThreadPool")
-    public ThreadPoolTaskExecutor hotKeyComputeThreadPool() {
-        ThreadPoolTaskExecutor taskExecutor = new ThreadPoolTaskExecutor();
-        taskExecutor.setCorePoolSize(5);
-        taskExecutor.setMaxPoolSize(20);
-        taskExecutor.setQueueCapacity(2000);
-        taskExecutor.setKeepAliveSeconds(60);
-        taskExecutor.setThreadNamePrefix("hotKeyComputeThreadPool");
-        taskExecutor.setRejectedExecutionHandler(new ThreadPoolExecutor.AbortPolicy());
-        return taskExecutor;
+    public ExecutorService hotKeyComputeThreadPool() {
+        return Executors.newCachedThreadPool();
+    }
+
+    @Bean(value = "singleThreadPool")
+    public ExecutorService singleExecutor() {
+        return Executors.newSingleThreadExecutor();
     }
 
 }
