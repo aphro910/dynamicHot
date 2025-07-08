@@ -17,19 +17,19 @@ DynamicHot是一个基于Netty的轻量化hot-key监测系统，用户可通过�
 > https://gitee.com/jd-platform-opensource/hotkey
 
  **Client:** 
-通过注解@DynamicHot对接口进行增强，包含两个参数tableName、key,tableName表示需要查询的数据表名称(仅做区分，不一定为真实表名),key表示该请求中需要查询数据的unique key(支持spel表达式)  
+通过注解@DynamicHot对接口进行增强，包含两个参数key、value,key表示需要查询的数据标识(如数据库表名，仅做区分，不一定为真实表名),value表示该请求中需要查询数据的unique value(支持spel表达式)  
 
 e.g:
 
 ```
-@DynamicHot(tableName="user",key="#userId")
+@DynamicHot(key="user",value="#userId")
 public User getUser(Long userId){
     //数据查询逻辑
 }
 ```
 
 
-被注解包装的方法会在请求前获取到用户请求的tablename和key，并生成对应的request key,缓存到本地JVM内存中进行统计，通过定时任务定期通过Netty的长连接发送给对应的server进行汇总并计算。  
+被注解包装的方法会在请求前获取到用户请求的key和value，并生成对应的request key,缓存到本地JVM内存中进行统计，通过定时任务定期通过Netty的长连接发送给对应的server进行汇总并计算。  
 client发送数据时会根据每个request key进行hashcode取模，选择Netty server集群中对应的server进行发送，即每一个request key都有一个相应的server，保证该key在全局视图的一致性
 
 
