@@ -14,7 +14,6 @@ import io.netty.handler.codec.http.DefaultHttpHeaders;
 import io.netty.handler.codec.http.HttpClientCodec;
 import io.netty.handler.codec.http.HttpObjectAggregator;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
 import io.netty.handler.codec.http.websocketx.WebSocketVersion;
 import io.netty.handler.stream.ChunkedWriteHandler;
@@ -26,6 +25,7 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.net.URI;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -41,6 +41,8 @@ public class NettyClient {
     private static final Logger log = LoggerFactory.getLogger(NettyClient.class);
     private static Map<String, Channel> connections = new ConcurrentHashMap<>();
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(5);
+
+    private List<String> hostList = new ArrayList<>();
 
     public static void remove(Channel channel) {
         for (Map.Entry<String, Channel> entry : connections.entrySet()) {
@@ -101,7 +103,9 @@ public class NettyClient {
     public void send(Map<String, Integer> data) {
         Set<String> keySet = connections.keySet();
         long timestamp = System.currentTimeMillis();
-        List<String> hostList = keySet.stream().sorted().collect(Collectors.toList());
+        if (hostList.size() != keySet.size()) {
+            hostList = keySet.stream().sorted().collect(Collectors.toList());
+        }
         if (hostList.isEmpty()) {
             return;
         }

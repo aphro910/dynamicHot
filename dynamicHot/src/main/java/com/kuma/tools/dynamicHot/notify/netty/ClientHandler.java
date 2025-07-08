@@ -67,7 +67,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
                 hotKeyContext.globalHotKey.addAll(newKey);
 
                 sessionMap.remove(chunkInfo.getSessionId());
-                log.info("hot_key updated: {}", hotKeyContext.globalHotKey);
+                log.debug("hot_key updated: {}", hotKeyContext.globalHotKey);
             }
         }
     }
@@ -104,6 +104,5 @@ public class ClientHandler extends SimpleChannelInboundHandler<WebSocketFrame> {
         Set<String> oldKey = hotKeyContext.partitionHotKey.getOrDefault(channel.id().asShortText(), Collections.emptySet());
         hotKeyContext.partitionHotKey.remove(channel.id().asShortText());
         hotKeyContext.globalHotKey.removeAll(oldKey);
-        log.info("channel:{} Removed", channel.id());
     }
 }

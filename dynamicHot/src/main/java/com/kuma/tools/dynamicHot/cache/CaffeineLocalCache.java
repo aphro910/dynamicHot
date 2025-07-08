@@ -1,7 +1,6 @@
 package com.kuma.tools.dynamicHot.cache;
 
 import org.aspectj.lang.ProceedingJoinPoint;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 

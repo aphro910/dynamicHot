@@ -1,11 +1,11 @@
 package com.kuma.tools.dynamicHot.context;
 
+import cn.hutool.core.collection.ConcurrentHashSet;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PostConstruct;
-import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
@@ -16,7 +16,7 @@ public class HotKeyContext {
     public ReentrantReadWriteLock lock = new ReentrantReadWriteLock();
     public Map<String, Integer> keyMap;
     public Map<String, Set<String>> partitionHotKey = new ConcurrentHashMap<>();
-    public Set<String> globalHotKey = new HashSet<>();
+    public Set<String> globalHotKey = new ConcurrentHashSet<>();
 
     @Value("${spring.dynamic.hotkey.report.maxSize:-1}")
     private Integer maxSize;

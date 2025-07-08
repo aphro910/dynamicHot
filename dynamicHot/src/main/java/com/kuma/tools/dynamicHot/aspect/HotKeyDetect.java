@@ -14,8 +14,6 @@ import org.springframework.expression.spel.support.StandardEvaluationContext;
 import org.springframework.stereotype.Component;
 
 import java.lang.reflect.Method;
-import java.util.Map;
-import java.util.Set;
 
 @Aspect
 @Component
@@ -33,18 +31,18 @@ public class HotKeyDetect {
     public Object around(ProceedingJoinPoint joinPoint) throws Throwable {
         //获取注解信息
         DynamicHot dynamicHot = getDynamicHotAnnotation(joinPoint);
-        String tableName = dynamicHot.tableName();
-        String spelExpression = dynamicHot.id();
+        String key = dynamicHot.key();
+        String spelExpression = dynamicHot.value();
 
         //解析SpEL表达式
         String dynamicKey = parseSpelExpression(joinPoint, spelExpression);
 
         //判断是否是hotkey
-        String key = tableName+"_"+dynamicKey;
-        record(key);
+        String requestKey = key+"_"+dynamicKey;
+        record(requestKey);
 
-        if (isHot(key)) {
-            return caches.get(key, joinPoint);
+        if (isHot(requestKey)) {
+            return caches.get(requestKey, joinPoint);
         }
         return joinPoint.proceed();
     }
