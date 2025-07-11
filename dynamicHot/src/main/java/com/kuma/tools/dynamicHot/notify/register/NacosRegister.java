@@ -7,7 +7,8 @@ import com.alibaba.nacos.api.naming.listener.EventListener;
 import com.alibaba.nacos.api.naming.listener.NamingEvent;
 import com.alibaba.nacos.api.naming.pojo.Instance;
 import com.kuma.tools.dynamicHot.notify.netty.NettyClient;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
@@ -20,7 +21,6 @@ import java.util.Properties;
 
 @Component
 @ConditionalOnProperty(name = "spring.dynamic.hotkey.register.type", havingValue = "nacos", matchIfMissing = true)
-@Log4j2
 public class NacosRegister implements Register {
 
     @Value("${spring.cloud.nacos.config.server-addr:127.0.0.1:8848}")
@@ -36,6 +36,8 @@ public class NacosRegister implements Register {
     NettyClient nettyClient;
 
     private NamingService namingService;
+
+    private static final Logger log = LoggerFactory.getLogger(NacosRegister.class);
 
     @Override
     @PostConstruct

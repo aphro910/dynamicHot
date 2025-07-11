@@ -1,10 +1,8 @@
 package com.kuma.tools.dynamicHotCompute.netty;
 
-import cn.hutool.json.JSONUtil;
-import com.kuma.tools.dynamicHotCompute.consts.Constants;
 import com.kuma.tools.dynamicHotCompute.context.ChannelContext;
 import com.kuma.tools.dynamicHotCompute.handler.HotKeyHandler;
-import com.kuma.tools.dynamicHotCompute.entity.Message;
+import com.kuma.tools.dynamicHotCompute.protobuf.DataModel;
 import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.channel.Channel;
@@ -12,18 +10,20 @@ import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 
-@Log4j2
 @Component
 @ChannelHandler.Sharable
 public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocketFrame> {
 
     @Autowired
     HotKeyHandler hotKeyHandler;
+
+    private static final Logger log = LoggerFactory.getLogger(WSServerHandler.class);
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {
@@ -37,12 +37,12 @@ public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocket
         try {
             byte[] bytes = new byte[content.readableBytes()];
             content.readBytes(bytes); // 读取为 byte[]
-            String str = CompressUtil.decompress(bytes);
-            if (str.equals(Constants.PING_PONG)) {
+            byte[] res = CompressUtil.decompressToByteArray(bytes);
+            DataModel.Message message = DataModel.Message.parseFrom(res);
+            if (message.getPingpong()) {
                 return;
             }
-            log.info("channel received message: " + str);
-            Message message = JSONUtil.toBean(str, Message.class);
+            log.debug("channel received message: {}" , message);
             hotKeyHandler.add(message);
         } catch (Exception e) {
             e.printStackTrace();

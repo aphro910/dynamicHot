@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+option java_package = "com.kuma.tools.dynamicHotCompute.protobuf";
+option java_outer_classname = "DataModel";
+
+message Message {
+  bool pingpong = 1;
+  string key = 2;
+  int32 count = 3;
+  int64 timestamp = 4;
+}
+
+message ChunkInfo {
+  string type = 1;//START、END
+  string sessionId = 2;
+  int32 chunkSize = 3;
+  int32 chunkIndex = 4;
+  repeated string data = 5;
+}

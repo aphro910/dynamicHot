@@ -1,17 +1,13 @@
 package com.kuma.tools.dynamicHotCompute.handler;
 
-import cn.hutool.json.JSONUtil;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.kuma.tools.dynamicHotCompute.consts.Constants;
 import com.kuma.tools.dynamicHotCompute.context.ChannelContext;
-import com.kuma.tools.dynamicHotCompute.entity.Chunk;
-import com.kuma.tools.dynamicHotCompute.entity.ChunkInfo;
-import com.kuma.tools.dynamicHotCompute.entity.Message;
+import com.kuma.tools.dynamicHotCompute.protobuf.DataModel;
 import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.TextWebSocketFrame;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -26,7 +22,7 @@ import java.util.concurrent.*;
 @Component
 public class HotKeyHandler {
 
-    private Map<String, Deque<Message>> keyMap;
+    private Map<String, Deque<DataModel.Message>> keyMap;
     private List<String> hotKeyList;
 
     @Autowired
@@ -51,7 +47,7 @@ public class HotKeyHandler {
     public void initMap() {
         if (maxKeySize > 0) {
             //设置最大key size,超过则通过LRU进行淘汰
-            ConcurrentLinkedHashMap.Builder<String, Deque<Message>> builder = new ConcurrentLinkedHashMap.Builder<>();
+            ConcurrentLinkedHashMap.Builder<String, Deque<DataModel.Message>> builder = new ConcurrentLinkedHashMap.Builder<>();
             keyMap = builder.maximumWeightedCapacity(maxKeySize).build();
         } else {
             //不设置最大key size,只保证数据写入的原子性,可能有OOM风险
@@ -71,7 +67,7 @@ public class HotKeyHandler {
         return keyMap.isEmpty();
     }
 
-    public void add(Message message) {
+    public void add(DataModel.Message message) {
         String key = message.getKey();
         keyMap.computeIfAbsent(key, k -> new ArrayDeque<>()).addFirst(message);
         //移除过期的数据
@@ -91,18 +87,18 @@ public class HotKeyHandler {
         }
         List<String> hotKeyList = new ArrayList<>();
         List<Future<List<String>>> futures = new ArrayList<>();
-        List<List<Deque<Message>>> dequeList = new ArrayList<>(10);
+        List<List<Deque<DataModel.Message>>> dequeList = new ArrayList<>(10);
         for (int i = 0; i < 10; i++) {
             dequeList.add(new ArrayList<>());
         }
 
-        for (Map.Entry<String, Deque<Message>> entry : keyMap.entrySet()) {
+        for (Map.Entry<String, Deque<DataModel.Message>> entry : keyMap.entrySet()) {
             String key = entry.getKey();
             int bucket = Math.abs(key.hashCode()) % 10;
             dequeList.get(bucket).add(entry.getValue());
         }
 
-        for (List<Deque<Message>> item : dequeList) {
+        for (List<Deque<DataModel.Message>> item : dequeList) {
             Future<List<String>> future = hotKeyComputeExecutor.submit(new Callable<List<String>>() {
                 @Override
                 public List<String> call() throws Exception {
@@ -129,15 +125,15 @@ public class HotKeyHandler {
         }
     }
 
-    private List<String> executeBatch(List<Deque<Message>> batch) {
+    private List<String> executeBatch(List<Deque<DataModel.Message>> batch) {
         long nowTime = System.currentTimeMillis();
         List<String> hotKeyList = new ArrayList<>();
-        for (Deque<Message> messages : batch) {
+        for (Deque<DataModel.Message> messages : batch) {
             if (messages.isEmpty()) {
                 break;
             }
             int count = 0;
-            for (Message message : messages) {
+            for (DataModel.Message message : messages) {
                 if (nowTime - timeRange <= message.getTimestamp()) {
                     count += message.getCount();
                     if (count >= hotCount) {
@@ -156,13 +152,20 @@ public class HotKeyHandler {
     private void sendHotKeysInChunks(List<String> hotKeyList) {
         String sessionId = UUID.randomUUID().toString();
         int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
-
         // 发送开始标记
-        ChunkInfo chunkStart = new ChunkInfo();
-        chunkStart.setType(Constants.CHUNK_START);
-        chunkStart.setSessionId(sessionId);
-        chunkStart.setChunkSize(totalChunks);
-        ChannelContext.channelGroup.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(chunkStart)));
+        DataModel.ChunkInfo chunkStart = DataModel.ChunkInfo.newBuilder()
+                .setType(Constants.CHUNK_START)
+                .setSessionId(sessionId)
+                .setChunkSize(totalChunks)
+                .build();
+
+        try {
+            byte[] compressed = CompressUtil.compress(chunkStart.toByteArray());
+            ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
+            ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         // 分块发送数据
         for (int i = 0; i < totalChunks; i++) {
@@ -171,15 +174,17 @@ public class HotKeyHandler {
             List<String> chunkList = hotKeyList.subList(start, end);
 
             // 构建分块数据
-            Chunk chunkData = new Chunk();
-            chunkData.setSessionId(sessionId);
-            chunkData.setIndex(i);
-            chunkData.setTotal(totalChunks);
-            chunkData.setData(chunkList);
+            DataModel.ChunkInfo chunkData = DataModel.ChunkInfo.newBuilder()
+                    .setType(Constants.CHUNK_DATA)
+                    .setSessionId(sessionId)
+                    .setChunkIndex(i)
+                    .setChunkSize(totalChunks)
+                    .addAllData(chunkList)
+                    .build();
 
             try {
                 // 压缩并发送
-                byte[] compressed = CompressUtil.compress(JSONUtil.toJsonStr(chunkData));
+                byte[] compressed = CompressUtil.compress(chunkData.toByteArray());
                 ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
                 ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
             } catch (IOException e) {
@@ -188,10 +193,19 @@ public class HotKeyHandler {
         }
 
         // 发送结束标记
-        ChunkInfo chunkEnd = new ChunkInfo();
-        chunkEnd.setType(Constants.CHUNK_END);
-        chunkEnd.setSessionId(sessionId);
-        ChannelContext.channelGroup.writeAndFlush(new TextWebSocketFrame(JSONUtil.toJsonStr(chunkEnd)));
+        DataModel.ChunkInfo chunkEnd = DataModel.ChunkInfo.newBuilder()
+                .setType(Constants.CHUNK_END)
+                .setSessionId(sessionId)
+                .setChunkSize(totalChunks)
+                .build();
+        try {
+            // 压缩并发送
+            byte[] compressed = CompressUtil.compress(chunkEnd.toByteArray());
+            ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
+            ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     @PreDestroy

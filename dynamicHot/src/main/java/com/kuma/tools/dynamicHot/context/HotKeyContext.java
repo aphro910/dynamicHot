@@ -1,6 +1,6 @@
 package com.kuma.tools.dynamicHot.context;
 
-import cn.hutool.core.collection.ConcurrentHashSet;
+import com.alibaba.nacos.common.utils.ConcurrentHashSet;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;

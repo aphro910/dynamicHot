@@ -6,7 +6,8 @@ import io.netty.channel.ChannelFutureListener;
 import io.netty.channel.EventLoopGroup;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.nio.NioServerSocketChannel;
-import lombok.extern.log4j.Log4j2;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Component;
 import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
-@Log4j2
 @Component
 public class WSNettyServer {
 
@@ -23,6 +23,8 @@ public class WSNettyServer {
 
     @Value("${spring.server.netty.port:8088}")
     private int port;
+
+    private static final Logger log = LoggerFactory.getLogger(WSNettyServer.class);
 
     private EventLoopGroup mainGroup;
     private EventLoopGroup subGroup;

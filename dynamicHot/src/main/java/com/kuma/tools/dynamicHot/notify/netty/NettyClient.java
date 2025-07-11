@@ -1,7 +1,6 @@
 package com.kuma.tools.dynamicHot.notify.netty;
 
-import cn.hutool.json.JSONUtil;
-import com.kuma.tools.dynamicHot.notify.Message;
+import com.kuma.tools.dynamicHot.notify.register.protobuf.DataModel;
 import com.kuma.tools.dynamicHot.utils.CompressUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
@@ -118,13 +117,15 @@ public class NettyClient {
             if (channel == null) {
                 return;
             }
-            Message message = new Message();
-            message.setKey(key);
-            message.setCount(count);
-            message.setTimestamp(timestamp);
+            DataModel.Message request = DataModel.Message.newBuilder()
+                    .setPingpong(false)
+                    .setKey(key)
+                    .setCount(count)
+                    .setTimestamp(timestamp)
+                    .build();
             try {
-                byte[] binaryData = CompressUtil.compress(JSONUtil.toJsonStr(message));
-                ByteBuf buffer = Unpooled.wrappedBuffer(binaryData);
+                byte[] compressed = CompressUtil.compress(request.toByteArray());
+                ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
                 channel.writeAndFlush(new BinaryWebSocketFrame(buffer));
             } catch (Exception e) {
                 e.printStackTrace();
