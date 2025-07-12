@@ -53,6 +53,7 @@ public class HotKeyHandler {
             //不设置最大key size,只保证数据写入的原子性,可能有OOM风险
             keyMap = new ConcurrentHashMap<>();
         }
+        hotKeyList = new ArrayList<>();
         singleExecutor.execute(new Runnable() {
             @Override
             public void run() {
