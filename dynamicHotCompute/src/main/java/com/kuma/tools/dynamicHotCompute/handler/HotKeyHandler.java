@@ -8,6 +8,8 @@ import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
 import io.netty.buffer.Unpooled;
 import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,6 +24,7 @@ import java.util.concurrent.*;
 @Component
 public class HotKeyHandler {
 
+    private static final Logger log = LoggerFactory.getLogger(HotKeyHandler.class);
     private Map<String, Deque<DataModel.Message>> keyMap;
     private List<String> hotKeyList;
 
@@ -83,7 +86,7 @@ public class HotKeyHandler {
                 Thread.sleep(100);
                 return;
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                log.error(e.getMessage());
             }
         }
         List<String> hotKeyList = new ArrayList<>();
@@ -100,13 +103,17 @@ public class HotKeyHandler {
         }
 
         for (List<Deque<DataModel.Message>> item : dequeList) {
-            Future<List<String>> future = hotKeyComputeExecutor.submit(new Callable<List<String>>() {
-                @Override
-                public List<String> call() throws Exception {
-                    return executeBatch(item);
-                }
-            });
-            futures.add(future);
+            try {
+                Future<List<String>> future = hotKeyComputeExecutor.submit(new Callable<List<String>>() {
+                    @Override
+                    public List<String> call() throws Exception {
+                        return executeBatch(item);
+                    }
+                });
+                futures.add(future);
+            } catch (RejectedExecutionException e) {
+                log.warn(e.getMessage());
+            }
         }
 
         for (Future<List<String>> future : futures) {
