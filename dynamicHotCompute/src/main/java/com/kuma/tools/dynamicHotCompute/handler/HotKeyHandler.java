@@ -44,10 +44,12 @@ public class HotKeyHandler {
 
     private boolean isStop = false;
     private static final int CHUNK_SIZE = 500; // 每块500个键
+    private List<List<Deque<DataModel.Message>>> dequeList;
+    private static final int concurrency = 16; //此处需为2^n,否则下面的取模运算会出问题
 
 
     @PostConstruct
-    public void initMap() {
+    public void init() {
         if (maxKeySize > 0) {
             //设置最大key size,超过则通过LRU进行淘汰
             ConcurrentLinkedHashMap.Builder<String, Deque<DataModel.Message>> builder = new ConcurrentLinkedHashMap.Builder<>();
@@ -57,6 +59,11 @@ public class HotKeyHandler {
             keyMap = new ConcurrentHashMap<>();
         }
         hotKeyList = new ArrayList<>();
+        dequeList = new ArrayList<>(concurrency);
+        for (int i = 0; i < concurrency; i++) {
+            dequeList.add(new ArrayList<>());
+        }
+
         singleExecutor.execute(new Runnable() {
             @Override
             public void run() {
@@ -91,14 +98,10 @@ public class HotKeyHandler {
         }
         List<String> hotKeyList = new ArrayList<>();
         List<Future<List<String>>> futures = new ArrayList<>();
-        List<List<Deque<DataModel.Message>>> dequeList = new ArrayList<>(10);
-        for (int i = 0; i < 10; i++) {
-            dequeList.add(new ArrayList<>());
-        }
 
         for (Map.Entry<String, Deque<DataModel.Message>> entry : keyMap.entrySet()) {
             String key = entry.getKey();
-            int bucket = Math.abs(key.hashCode()) % 10;
+            int bucket = Math.abs(key.hashCode()) & (concurrency-1);
             dequeList.get(bucket).add(entry.getValue());
         }
 
@@ -125,6 +128,14 @@ public class HotKeyHandler {
             }
         }
         this.hotKeyList = hotKeyList;
+        //dequeList重复利用,减少内存消耗和GC次数
+        dequeClear();
+    }
+
+    private void dequeClear() {
+        for (int i = 0; i < concurrency; i++) {
+            dequeList.get(i).clear();
+        }
     }
 
     public void push() {
