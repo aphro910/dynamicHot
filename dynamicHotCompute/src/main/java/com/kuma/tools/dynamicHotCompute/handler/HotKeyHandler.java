@@ -75,7 +75,7 @@ public class HotKeyHandler {
     }
 
     public boolean isEmpty() {
-        return keyMap.isEmpty();
+        return hotKeyList.isEmpty();
     }
 
     public void add(DataModel.Message message) {
