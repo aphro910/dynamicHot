@@ -5,9 +5,9 @@
 ### What
 
 
-DynamicHot是一个基于Netty的轻量化hot-key监测系统，用户可通过注解的方式对需要监测的接口进行包装，动态地将当前接口hot-key的内容加入到本地缓存（caffeine），提升接口访问性能，并节省宝贵的JVM内存资源  
+DynamicHot是一个基于Netty的轻量化、高性能hot-key监测系统，用户可通过注解的方式对需要监测的接口进行包装，动态地将当前接口hot-key的内容加入到本地缓存（caffeine），提升接口访问性能，并节省宝贵的JVM内存资源  
 压力测试：  
-在单机单channel条件下测试，netty server每秒可写入7w条来自client的汇报数据(每条汇报数据包含单个key的聚合次数)  
+在 **单机单channel** 条件下测试，netty server每秒可写入100w条来自client的汇报数据(每条汇报数据包含单个key的聚合次数) ，同时每秒可推送300W条Hot-key到客户端   
 更详细的压测数据需要在分布式条件下测试，目前只有一台电脑，没有条件进行。
 
 
@@ -30,7 +30,7 @@ public User getUser(Long userId){
 
 
 被注解包装的方法会在请求前获取到用户请求的key和value，并生成对应的request key,缓存到本地JVM内存中进行统计，通过定时任务定期通过Netty的长连接发送给对应的server进行汇总并计算。  
-client发送数据时会根据每个request key进行hashcode取模，选择Netty server集群中对应的server进行发送，即每一个request key都有一个相应的server，保证该key在全局视图的一致性
+client发送数据时会根据每个request key进行hashcode取模，选择Netty server集群中对应的server进行发送，即每一个request key都有一个相应的server，保证该key在全局视图的一致性  
 
 
  **Server:** 
