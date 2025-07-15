@@ -4,13 +4,17 @@ option java_package = "com.kuma.tools.dynamicHot.notify.register.protobuf";
 option java_outer_classname = "DataModel";
 
 message Message {
-  bool pingpong = 1;
-  string key = 2;
-  int32 count = 3;
-  int64 timestamp = 4;
+  string key = 1;
+  int32 count = 2;
+  int64 timestamp = 3;
 }
 
-message ChunkInfo {
+message MessageChunkInfo {
+  string type = 1;
+  repeated Message batchMessage = 2;
+}
+
+message HotKeyChunkInfo {
   string type = 1;//START、END、DATA
   string sessionId = 2;
   int32 chunkSize = 3;

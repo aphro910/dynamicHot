@@ -43,7 +43,7 @@ public class HotKeyHandler {
     private int hotCount;
 
     private boolean isStop = false;
-    private static final int CHUNK_SIZE = 500; // 每块500个键
+    private static final int CHUNK_SIZE = 1000; // 每块1000个键
     private List<List<Deque<DataModel.Message>>> dequeList;
     private static final int concurrency = 16; //此处需为2^n,否则下面的取模运算会出问题
 
@@ -172,7 +172,7 @@ public class HotKeyHandler {
         String sessionId = UUID.randomUUID().toString();
         int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
         // 发送开始标记
-        DataModel.ChunkInfo chunkStart = DataModel.ChunkInfo.newBuilder()
+        DataModel.HotKeyChunkInfo chunkStart = DataModel.HotKeyChunkInfo.newBuilder()
                 .setType(Constants.CHUNK_START)
                 .setSessionId(sessionId)
                 .setChunkSize(totalChunks)
@@ -193,7 +193,7 @@ public class HotKeyHandler {
             List<String> chunkList = hotKeyList.subList(start, end);
 
             // 构建分块数据
-            DataModel.ChunkInfo chunkData = DataModel.ChunkInfo.newBuilder()
+            DataModel.HotKeyChunkInfo chunkData = DataModel.HotKeyChunkInfo.newBuilder()
                     .setType(Constants.CHUNK_DATA)
                     .setSessionId(sessionId)
                     .setChunkIndex(i)
@@ -212,7 +212,7 @@ public class HotKeyHandler {
         }
 
         // 发送结束标记
-        DataModel.ChunkInfo chunkEnd = DataModel.ChunkInfo.newBuilder()
+        DataModel.HotKeyChunkInfo chunkEnd = DataModel.HotKeyChunkInfo.newBuilder()
                 .setType(Constants.CHUNK_END)
                 .setSessionId(sessionId)
                 .setChunkSize(totalChunks)

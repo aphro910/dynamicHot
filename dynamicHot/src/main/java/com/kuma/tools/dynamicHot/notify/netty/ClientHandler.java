@@ -29,7 +29,7 @@ public class ClientHandler extends SimpleChannelInboundHandler<BinaryWebSocketFr
     @Autowired
     private HotKeyContext hotKeyContext;
 
-    private Map<String,List<DataModel.ChunkInfo>> sessionMap = new ConcurrentHashMap<>();
+    private Map<String,List<DataModel.HotKeyChunkInfo>> sessionMap = new ConcurrentHashMap<>();
 
     private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
@@ -40,14 +40,14 @@ public class ClientHandler extends SimpleChannelInboundHandler<BinaryWebSocketFr
         content.readBytes(bytes); // 读取为 byte[]
         try {
             byte[] byteArray = CompressUtil.decompressToByteArray(bytes);
-            DataModel.ChunkInfo chunkInfo = DataModel.ChunkInfo.parseFrom(byteArray);
+            DataModel.HotKeyChunkInfo chunkInfo = DataModel.HotKeyChunkInfo.parseFrom(byteArray);
             if (chunkInfo.getType().equals(Constants.CHUNK_START)) {
                 sessionMap.putIfAbsent(chunkInfo.getSessionId(), new ArrayList<>());
             } else if (chunkInfo.getType().equals(Constants.CHUNK_END)) {
-                List<DataModel.ChunkInfo> chunkList = sessionMap.get(chunkInfo.getSessionId());
+                List<DataModel.HotKeyChunkInfo> chunkList = sessionMap.get(chunkInfo.getSessionId());
                 //数据组装
                 List<String> hotKeys = new ArrayList<>();
-                for (DataModel.ChunkInfo chunk : chunkList) {
+                for (DataModel.HotKeyChunkInfo chunk : chunkList) {
                     hotKeys.addAll(chunk.getDataList());
                 }
                 Set<String> oldKey = hotKeyContext.partitionHotKey.getOrDefault(ctx.channel().id().asShortText(), Collections.emptySet());
@@ -78,8 +78,8 @@ public class ClientHandler extends SimpleChannelInboundHandler<BinaryWebSocketFr
             IdleStateEvent event = (IdleStateEvent) evt;
             //发送心跳消息
             try {
-                DataModel.Message request = DataModel.Message.newBuilder()
-                        .setPingpong(true)
+                DataModel.MessageChunkInfo request = DataModel.MessageChunkInfo.newBuilder()
+                        .setType(Constants.CHUNK_PING)
                         .build();
                 byte[] ping = CompressUtil.compress(request.toByteArray());
                 ByteBuf buffer = Unpooled.wrappedBuffer(ping);

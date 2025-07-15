@@ -19,31 +19,25 @@ public final class DataModel {
       com.google.protobuf.MessageOrBuilder {
 
     /**
-     * <code>bool pingpong = 1;</code>
-     * @return The pingpong.
-     */
-    boolean getPingpong();
-
-    /**
-     * <code>string key = 2;</code>
+     * <code>string key = 1;</code>
      * @return The key.
      */
     java.lang.String getKey();
     /**
-     * <code>string key = 2;</code>
+     * <code>string key = 1;</code>
      * @return The bytes for key.
      */
     com.google.protobuf.ByteString
         getKeyBytes();
 
     /**
-     * <code>int32 count = 3;</code>
+     * <code>int32 count = 2;</code>
      * @return The count.
      */
     int getCount();
 
     /**
-     * <code>int64 timestamp = 4;</code>
+     * <code>int64 timestamp = 3;</code>
      * @return The timestamp.
      */
     long getTimestamp();
@@ -94,23 +88,18 @@ public final class DataModel {
             case 0:
               done = true;
               break;
-            case 8: {
-
-              pingpong_ = input.readBool();
-              break;
-            }
-            case 18: {
+            case 10: {
               java.lang.String s = input.readStringRequireUtf8();
 
               key_ = s;
               break;
             }
-            case 24: {
+            case 16: {
 
               count_ = input.readInt32();
               break;
             }
-            case 32: {
+            case 24: {
 
               timestamp_ = input.readInt64();
               break;
@@ -149,21 +138,10 @@ public final class DataModel {
               com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder.class);
     }
 
-    public static final int PINGPONG_FIELD_NUMBER = 1;
-    private boolean pingpong_;
-    /**
-     * <code>bool pingpong = 1;</code>
-     * @return The pingpong.
-     */
-    @java.lang.Override
-    public boolean getPingpong() {
-      return pingpong_;
-    }
-
-    public static final int KEY_FIELD_NUMBER = 2;
+    public static final int KEY_FIELD_NUMBER = 1;
     private volatile java.lang.Object key_;
     /**
-     * <code>string key = 2;</code>
+     * <code>string key = 1;</code>
      * @return The key.
      */
     @java.lang.Override
@@ -180,7 +158,7 @@ public final class DataModel {
       }
     }
     /**
-     * <code>string key = 2;</code>
+     * <code>string key = 1;</code>
      * @return The bytes for key.
      */
     @java.lang.Override
@@ -198,10 +176,10 @@ public final class DataModel {
       }
     }
 
-    public static final int COUNT_FIELD_NUMBER = 3;
+    public static final int COUNT_FIELD_NUMBER = 2;
     private int count_;
     /**
-     * <code>int32 count = 3;</code>
+     * <code>int32 count = 2;</code>
      * @return The count.
      */
     @java.lang.Override
@@ -209,10 +187,10 @@ public final class DataModel {
       return count_;
     }
 
-    public static final int TIMESTAMP_FIELD_NUMBER = 4;
+    public static final int TIMESTAMP_FIELD_NUMBER = 3;
     private long timestamp_;
     /**
-     * <code>int64 timestamp = 4;</code>
+     * <code>int64 timestamp = 3;</code>
      * @return The timestamp.
      */
     @java.lang.Override
@@ -234,17 +212,14 @@ public final class DataModel {
     @java.lang.Override
     public void writeTo(com.google.protobuf.CodedOutputStream output)
                         throws java.io.IOException {
-      if (pingpong_ != false) {
-        output.writeBool(1, pingpong_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(key_)) {
-        com.google.protobuf.GeneratedMessageV3.writeString(output, 2, key_);
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, key_);
       }
       if (count_ != 0) {
-        output.writeInt32(3, count_);
+        output.writeInt32(2, count_);
       }
       if (timestamp_ != 0L) {
-        output.writeInt64(4, timestamp_);
+        output.writeInt64(3, timestamp_);
       }
       unknownFields.writeTo(output);
     }
@@ -255,20 +230,16 @@ public final class DataModel {
       if (size != -1) return size;
 
       size = 0;
-      if (pingpong_ != false) {
-        size += com.google.protobuf.CodedOutputStream
-          .computeBoolSize(1, pingpong_);
-      }
       if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(key_)) {
-        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(2, key_);
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, key_);
       }
       if (count_ != 0) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt32Size(3, count_);
+          .computeInt32Size(2, count_);
       }
       if (timestamp_ != 0L) {
         size += com.google.protobuf.CodedOutputStream
-          .computeInt64Size(4, timestamp_);
+          .computeInt64Size(3, timestamp_);
       }
       size += unknownFields.getSerializedSize();
       memoizedSize = size;
@@ -285,8 +256,6 @@ public final class DataModel {
       }
       com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message other = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message) obj;
 
-      if (getPingpong()
-          != other.getPingpong()) return false;
       if (!getKey()
           .equals(other.getKey())) return false;
       if (getCount()
@@ -304,9 +273,6 @@ public final class DataModel {
       }
       int hash = 41;
       hash = (19 * hash) + getDescriptor().hashCode();
-      hash = (37 * hash) + PINGPONG_FIELD_NUMBER;
-      hash = (53 * hash) + com.google.protobuf.Internal.hashBoolean(
-          getPingpong());
       hash = (37 * hash) + KEY_FIELD_NUMBER;
       hash = (53 * hash) + getKey().hashCode();
       hash = (37 * hash) + COUNT_FIELD_NUMBER;
@@ -447,8 +413,6 @@ public final class DataModel {
       @java.lang.Override
       public Builder clear() {
         super.clear();
-        pingpong_ = false;
-
         key_ = "";
 
         count_ = 0;
@@ -481,7 +445,6 @@ public final class DataModel {
       @java.lang.Override
       public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message buildPartial() {
         com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message result = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message(this);
-        result.pingpong_ = pingpong_;
         result.key_ = key_;
         result.count_ = count_;
         result.timestamp_ = timestamp_;
@@ -533,9 +496,6 @@ public final class DataModel {
 
       public Builder mergeFrom(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message other) {
         if (other == com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.getDefaultInstance()) return this;
-        if (other.getPingpong() != false) {
-          setPingpong(other.getPingpong());
-        }
         if (!other.getKey().isEmpty()) {
           key_ = other.key_;
           onChanged();
@@ -575,40 +535,9 @@ public final class DataModel {
         return this;
       }
 
-      private boolean pingpong_ ;
-      /**
-       * <code>bool pingpong = 1;</code>
-       * @return The pingpong.
-       */
-      @java.lang.Override
-      public boolean getPingpong() {
-        return pingpong_;
-      }
-      /**
-       * <code>bool pingpong = 1;</code>
-       * @param value The pingpong to set.
-       * @return This builder for chaining.
-       */
-      public Builder setPingpong(boolean value) {
-        
-        pingpong_ = value;
-        onChanged();
-        return this;
-      }
-      /**
-       * <code>bool pingpong = 1;</code>
-       * @return This builder for chaining.
-       */
-      public Builder clearPingpong() {
-        
-        pingpong_ = false;
-        onChanged();
-        return this;
-      }
-
       private java.lang.Object key_ = "";
       /**
-       * <code>string key = 2;</code>
+       * <code>string key = 1;</code>
        * @return The key.
        */
       public java.lang.String getKey() {
@@ -624,7 +553,7 @@ public final class DataModel {
         }
       }
       /**
-       * <code>string key = 2;</code>
+       * <code>string key = 1;</code>
        * @return The bytes for key.
        */
       public com.google.protobuf.ByteString
@@ -641,7 +570,7 @@ public final class DataModel {
         }
       }
       /**
-       * <code>string key = 2;</code>
+       * <code>string key = 1;</code>
        * @param value The key to set.
        * @return This builder for chaining.
        */
@@ -656,7 +585,7 @@ public final class DataModel {
         return this;
       }
       /**
-       * <code>string key = 2;</code>
+       * <code>string key = 1;</code>
        * @return This builder for chaining.
        */
       public Builder clearKey() {
@@ -666,7 +595,7 @@ public final class DataModel {
         return this;
       }
       /**
-       * <code>string key = 2;</code>
+       * <code>string key = 1;</code>
        * @param value The bytes for key to set.
        * @return This builder for chaining.
        */
@@ -684,7 +613,7 @@ public final class DataModel {
 
       private int count_ ;
       /**
-       * <code>int32 count = 3;</code>
+       * <code>int32 count = 2;</code>
        * @return The count.
        */
       @java.lang.Override
@@ -692,7 +621,7 @@ public final class DataModel {
         return count_;
       }
       /**
-       * <code>int32 count = 3;</code>
+       * <code>int32 count = 2;</code>
        * @param value The count to set.
        * @return This builder for chaining.
        */
@@ -703,7 +632,7 @@ public final class DataModel {
         return this;
       }
       /**
-       * <code>int32 count = 3;</code>
+       * <code>int32 count = 2;</code>
        * @return This builder for chaining.
        */
       public Builder clearCount() {
@@ -715,7 +644,7 @@ public final class DataModel {
 
       private long timestamp_ ;
       /**
-       * <code>int64 timestamp = 4;</code>
+       * <code>int64 timestamp = 3;</code>
        * @return The timestamp.
        */
       @java.lang.Override
@@ -723,7 +652,7 @@ public final class DataModel {
         return timestamp_;
       }
       /**
-       * <code>int64 timestamp = 4;</code>
+       * <code>int64 timestamp = 3;</code>
        * @param value The timestamp to set.
        * @return This builder for chaining.
        */
@@ -734,7 +663,7 @@ public final class DataModel {
         return this;
       }
       /**
-       * <code>int64 timestamp = 4;</code>
+       * <code>int64 timestamp = 3;</code>
        * @return This builder for chaining.
        */
       public Builder clearTimestamp() {
@@ -796,8 +725,953 @@ public final class DataModel {
 
   }
 
-  public interface ChunkInfoOrBuilder extends
-      // @@protoc_insertion_point(interface_extends:ChunkInfo)
+  public interface MessageChunkInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:MessageChunkInfo)
+      com.google.protobuf.MessageOrBuilder {
+
+    /**
+     * <code>string type = 1;</code>
+     * @return The type.
+     */
+    java.lang.String getType();
+    /**
+     * <code>string type = 1;</code>
+     * @return The bytes for type.
+     */
+    com.google.protobuf.ByteString
+        getTypeBytes();
+
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    java.util.List<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message> 
+        getBatchMessageList();
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message getBatchMessage(int index);
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    int getBatchMessageCount();
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    java.util.List<? extends com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder> 
+        getBatchMessageOrBuilderList();
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder getBatchMessageOrBuilder(
+        int index);
+  }
+  /**
+   * Protobuf type {@code MessageChunkInfo}
+   */
+  public static final class MessageChunkInfo extends
+      com.google.protobuf.GeneratedMessageV3 implements
+      // @@protoc_insertion_point(message_implements:MessageChunkInfo)
+      MessageChunkInfoOrBuilder {
+  private static final long serialVersionUID = 0L;
+    // Use MessageChunkInfo.newBuilder() to construct.
+    private MessageChunkInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+      super(builder);
+    }
+    private MessageChunkInfo() {
+      type_ = "";
+      batchMessage_ = java.util.Collections.emptyList();
+    }
+
+    @java.lang.Override
+    @SuppressWarnings({"unused"})
+    protected java.lang.Object newInstance(
+        UnusedPrivateParameter unused) {
+      return new MessageChunkInfo();
+    }
+
+    @java.lang.Override
+    public final com.google.protobuf.UnknownFieldSet
+    getUnknownFields() {
+      return this.unknownFields;
+    }
+    private MessageChunkInfo(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      this();
+      if (extensionRegistry == null) {
+        throw new java.lang.NullPointerException();
+      }
+      int mutable_bitField0_ = 0;
+      com.google.protobuf.UnknownFieldSet.Builder unknownFields =
+          com.google.protobuf.UnknownFieldSet.newBuilder();
+      try {
+        boolean done = false;
+        while (!done) {
+          int tag = input.readTag();
+          switch (tag) {
+            case 0:
+              done = true;
+              break;
+            case 10: {
+              java.lang.String s = input.readStringRequireUtf8();
+
+              type_ = s;
+              break;
+            }
+            case 18: {
+              if (!((mutable_bitField0_ & 0x00000001) != 0)) {
+                batchMessage_ = new java.util.ArrayList<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message>();
+                mutable_bitField0_ |= 0x00000001;
+              }
+              batchMessage_.add(
+                  input.readMessage(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.parser(), extensionRegistry));
+              break;
+            }
+            default: {
+              if (!parseUnknownField(
+                  input, unknownFields, extensionRegistry, tag)) {
+                done = true;
+              }
+              break;
+            }
+          }
+        }
+      } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+        throw e.setUnfinishedMessage(this);
+      } catch (com.google.protobuf.UninitializedMessageException e) {
+        throw e.asInvalidProtocolBufferException().setUnfinishedMessage(this);
+      } catch (java.io.IOException e) {
+        throw new com.google.protobuf.InvalidProtocolBufferException(
+            e).setUnfinishedMessage(this);
+      } finally {
+        if (((mutable_bitField0_ & 0x00000001) != 0)) {
+          batchMessage_ = java.util.Collections.unmodifiableList(batchMessage_);
+        }
+        this.unknownFields = unknownFields.build();
+        makeExtensionsImmutable();
+      }
+    }
+    public static final com.google.protobuf.Descriptors.Descriptor
+        getDescriptor() {
+      return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_MessageChunkInfo_descriptor;
+    }
+
+    @java.lang.Override
+    protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+        internalGetFieldAccessorTable() {
+      return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_MessageChunkInfo_fieldAccessorTable
+          .ensureFieldAccessorsInitialized(
+              com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.Builder.class);
+    }
+
+    public static final int TYPE_FIELD_NUMBER = 1;
+    private volatile java.lang.Object type_;
+    /**
+     * <code>string type = 1;</code>
+     * @return The type.
+     */
+    @java.lang.Override
+    public java.lang.String getType() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        return (java.lang.String) ref;
+      } else {
+        com.google.protobuf.ByteString bs = 
+            (com.google.protobuf.ByteString) ref;
+        java.lang.String s = bs.toStringUtf8();
+        type_ = s;
+        return s;
+      }
+    }
+    /**
+     * <code>string type = 1;</code>
+     * @return The bytes for type.
+     */
+    @java.lang.Override
+    public com.google.protobuf.ByteString
+        getTypeBytes() {
+      java.lang.Object ref = type_;
+      if (ref instanceof java.lang.String) {
+        com.google.protobuf.ByteString b = 
+            com.google.protobuf.ByteString.copyFromUtf8(
+                (java.lang.String) ref);
+        type_ = b;
+        return b;
+      } else {
+        return (com.google.protobuf.ByteString) ref;
+      }
+    }
+
+    public static final int BATCHMESSAGE_FIELD_NUMBER = 2;
+    private java.util.List<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message> batchMessage_;
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message> getBatchMessageList() {
+      return batchMessage_;
+    }
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    @java.lang.Override
+    public java.util.List<? extends com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder> 
+        getBatchMessageOrBuilderList() {
+      return batchMessage_;
+    }
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    @java.lang.Override
+    public int getBatchMessageCount() {
+      return batchMessage_.size();
+    }
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    @java.lang.Override
+    public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message getBatchMessage(int index) {
+      return batchMessage_.get(index);
+    }
+    /**
+     * <code>repeated .Message batchMessage = 2;</code>
+     */
+    @java.lang.Override
+    public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder getBatchMessageOrBuilder(
+        int index) {
+      return batchMessage_.get(index);
+    }
+
+    private byte memoizedIsInitialized = -1;
+    @java.lang.Override
+    public final boolean isInitialized() {
+      byte isInitialized = memoizedIsInitialized;
+      if (isInitialized == 1) return true;
+      if (isInitialized == 0) return false;
+
+      memoizedIsInitialized = 1;
+      return true;
+    }
+
+    @java.lang.Override
+    public void writeTo(com.google.protobuf.CodedOutputStream output)
+                        throws java.io.IOException {
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
+        com.google.protobuf.GeneratedMessageV3.writeString(output, 1, type_);
+      }
+      for (int i = 0; i < batchMessage_.size(); i++) {
+        output.writeMessage(2, batchMessage_.get(i));
+      }
+      unknownFields.writeTo(output);
+    }
+
+    @java.lang.Override
+    public int getSerializedSize() {
+      int size = memoizedSize;
+      if (size != -1) return size;
+
+      size = 0;
+      if (!com.google.protobuf.GeneratedMessageV3.isStringEmpty(type_)) {
+        size += com.google.protobuf.GeneratedMessageV3.computeStringSize(1, type_);
+      }
+      for (int i = 0; i < batchMessage_.size(); i++) {
+        size += com.google.protobuf.CodedOutputStream
+          .computeMessageSize(2, batchMessage_.get(i));
+      }
+      size += unknownFields.getSerializedSize();
+      memoizedSize = size;
+      return size;
+    }
+
+    @java.lang.Override
+    public boolean equals(final java.lang.Object obj) {
+      if (obj == this) {
+       return true;
+      }
+      if (!(obj instanceof com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo)) {
+        return super.equals(obj);
+      }
+      com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo other = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo) obj;
+
+      if (!getType()
+          .equals(other.getType())) return false;
+      if (!getBatchMessageList()
+          .equals(other.getBatchMessageList())) return false;
+      if (!unknownFields.equals(other.unknownFields)) return false;
+      return true;
+    }
+
+    @java.lang.Override
+    public int hashCode() {
+      if (memoizedHashCode != 0) {
+        return memoizedHashCode;
+      }
+      int hash = 41;
+      hash = (19 * hash) + getDescriptor().hashCode();
+      hash = (37 * hash) + TYPE_FIELD_NUMBER;
+      hash = (53 * hash) + getType().hashCode();
+      if (getBatchMessageCount() > 0) {
+        hash = (37 * hash) + BATCHMESSAGE_FIELD_NUMBER;
+        hash = (53 * hash) + getBatchMessageList().hashCode();
+      }
+      hash = (29 * hash) + unknownFields.hashCode();
+      memoizedHashCode = hash;
+      return hash;
+    }
+
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        java.nio.ByteBuffer data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        java.nio.ByteBuffer data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        com.google.protobuf.ByteString data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        com.google.protobuf.ByteString data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(byte[] data)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        byte[] data,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws com.google.protobuf.InvalidProtocolBufferException {
+      return PARSER.parseFrom(data, extensionRegistry);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseDelimitedFrom(java.io.InputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseDelimitedFrom(
+        java.io.InputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        com.google.protobuf.CodedInputStream input)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input);
+    }
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parseFrom(
+        com.google.protobuf.CodedInputStream input,
+        com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+        throws java.io.IOException {
+      return com.google.protobuf.GeneratedMessageV3
+          .parseWithIOException(PARSER, input, extensionRegistry);
+    }
+
+    @java.lang.Override
+    public Builder newBuilderForType() { return newBuilder(); }
+    public static Builder newBuilder() {
+      return DEFAULT_INSTANCE.toBuilder();
+    }
+    public static Builder newBuilder(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo prototype) {
+      return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
+    }
+    @java.lang.Override
+    public Builder toBuilder() {
+      return this == DEFAULT_INSTANCE
+          ? new Builder() : new Builder().mergeFrom(this);
+    }
+
+    @java.lang.Override
+    protected Builder newBuilderForType(
+        com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+      Builder builder = new Builder(parent);
+      return builder;
+    }
+    /**
+     * Protobuf type {@code MessageChunkInfo}
+     */
+    public static final class Builder extends
+        com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
+        // @@protoc_insertion_point(builder_implements:MessageChunkInfo)
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfoOrBuilder {
+      public static final com.google.protobuf.Descriptors.Descriptor
+          getDescriptor() {
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_MessageChunkInfo_descriptor;
+      }
+
+      @java.lang.Override
+      protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+          internalGetFieldAccessorTable() {
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_MessageChunkInfo_fieldAccessorTable
+            .ensureFieldAccessorsInitialized(
+                com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.Builder.class);
+      }
+
+      // Construct using com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.newBuilder()
+      private Builder() {
+        maybeForceBuilderInitialization();
+      }
+
+      private Builder(
+          com.google.protobuf.GeneratedMessageV3.BuilderParent parent) {
+        super(parent);
+        maybeForceBuilderInitialization();
+      }
+      private void maybeForceBuilderInitialization() {
+        if (com.google.protobuf.GeneratedMessageV3
+                .alwaysUseFieldBuilders) {
+          getBatchMessageFieldBuilder();
+        }
+      }
+      @java.lang.Override
+      public Builder clear() {
+        super.clear();
+        type_ = "";
+
+        if (batchMessageBuilder_ == null) {
+          batchMessage_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+        } else {
+          batchMessageBuilder_.clear();
+        }
+        return this;
+      }
+
+      @java.lang.Override
+      public com.google.protobuf.Descriptors.Descriptor
+          getDescriptorForType() {
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_MessageChunkInfo_descriptor;
+      }
+
+      @java.lang.Override
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo getDefaultInstanceForType() {
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.getDefaultInstance();
+      }
+
+      @java.lang.Override
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo build() {
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo result = buildPartial();
+        if (!result.isInitialized()) {
+          throw newUninitializedMessageException(result);
+        }
+        return result;
+      }
+
+      @java.lang.Override
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo buildPartial() {
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo result = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo(this);
+        int from_bitField0_ = bitField0_;
+        result.type_ = type_;
+        if (batchMessageBuilder_ == null) {
+          if (((bitField0_ & 0x00000001) != 0)) {
+            batchMessage_ = java.util.Collections.unmodifiableList(batchMessage_);
+            bitField0_ = (bitField0_ & ~0x00000001);
+          }
+          result.batchMessage_ = batchMessage_;
+        } else {
+          result.batchMessage_ = batchMessageBuilder_.build();
+        }
+        onBuilt();
+        return result;
+      }
+
+      @java.lang.Override
+      public Builder clone() {
+        return super.clone();
+      }
+      @java.lang.Override
+      public Builder setField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.setField(field, value);
+      }
+      @java.lang.Override
+      public Builder clearField(
+          com.google.protobuf.Descriptors.FieldDescriptor field) {
+        return super.clearField(field);
+      }
+      @java.lang.Override
+      public Builder clearOneof(
+          com.google.protobuf.Descriptors.OneofDescriptor oneof) {
+        return super.clearOneof(oneof);
+      }
+      @java.lang.Override
+      public Builder setRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          int index, java.lang.Object value) {
+        return super.setRepeatedField(field, index, value);
+      }
+      @java.lang.Override
+      public Builder addRepeatedField(
+          com.google.protobuf.Descriptors.FieldDescriptor field,
+          java.lang.Object value) {
+        return super.addRepeatedField(field, value);
+      }
+      @java.lang.Override
+      public Builder mergeFrom(com.google.protobuf.Message other) {
+        if (other instanceof com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo) {
+          return mergeFrom((com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo)other);
+        } else {
+          super.mergeFrom(other);
+          return this;
+        }
+      }
+
+      public Builder mergeFrom(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo other) {
+        if (other == com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo.getDefaultInstance()) return this;
+        if (!other.getType().isEmpty()) {
+          type_ = other.type_;
+          onChanged();
+        }
+        if (batchMessageBuilder_ == null) {
+          if (!other.batchMessage_.isEmpty()) {
+            if (batchMessage_.isEmpty()) {
+              batchMessage_ = other.batchMessage_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+            } else {
+              ensureBatchMessageIsMutable();
+              batchMessage_.addAll(other.batchMessage_);
+            }
+            onChanged();
+          }
+        } else {
+          if (!other.batchMessage_.isEmpty()) {
+            if (batchMessageBuilder_.isEmpty()) {
+              batchMessageBuilder_.dispose();
+              batchMessageBuilder_ = null;
+              batchMessage_ = other.batchMessage_;
+              bitField0_ = (bitField0_ & ~0x00000001);
+              batchMessageBuilder_ = 
+                com.google.protobuf.GeneratedMessageV3.alwaysUseFieldBuilders ?
+                   getBatchMessageFieldBuilder() : null;
+            } else {
+              batchMessageBuilder_.addAllMessages(other.batchMessage_);
+            }
+          }
+        }
+        this.mergeUnknownFields(other.unknownFields);
+        onChanged();
+        return this;
+      }
+
+      @java.lang.Override
+      public final boolean isInitialized() {
+        return true;
+      }
+
+      @java.lang.Override
+      public Builder mergeFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws java.io.IOException {
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo parsedMessage = null;
+        try {
+          parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
+        } catch (com.google.protobuf.InvalidProtocolBufferException e) {
+          parsedMessage = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo) e.getUnfinishedMessage();
+          throw e.unwrapIOException();
+        } finally {
+          if (parsedMessage != null) {
+            mergeFrom(parsedMessage);
+          }
+        }
+        return this;
+      }
+      private int bitField0_;
+
+      private java.lang.Object type_ = "";
+      /**
+       * <code>string type = 1;</code>
+       * @return The type.
+       */
+      public java.lang.String getType() {
+        java.lang.Object ref = type_;
+        if (!(ref instanceof java.lang.String)) {
+          com.google.protobuf.ByteString bs =
+              (com.google.protobuf.ByteString) ref;
+          java.lang.String s = bs.toStringUtf8();
+          type_ = s;
+          return s;
+        } else {
+          return (java.lang.String) ref;
+        }
+      }
+      /**
+       * <code>string type = 1;</code>
+       * @return The bytes for type.
+       */
+      public com.google.protobuf.ByteString
+          getTypeBytes() {
+        java.lang.Object ref = type_;
+        if (ref instanceof String) {
+          com.google.protobuf.ByteString b = 
+              com.google.protobuf.ByteString.copyFromUtf8(
+                  (java.lang.String) ref);
+          type_ = b;
+          return b;
+        } else {
+          return (com.google.protobuf.ByteString) ref;
+        }
+      }
+      /**
+       * <code>string type = 1;</code>
+       * @param value The type to set.
+       * @return This builder for chaining.
+       */
+      public Builder setType(
+          java.lang.String value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  
+        type_ = value;
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string type = 1;</code>
+       * @return This builder for chaining.
+       */
+      public Builder clearType() {
+        
+        type_ = getDefaultInstance().getType();
+        onChanged();
+        return this;
+      }
+      /**
+       * <code>string type = 1;</code>
+       * @param value The bytes for type to set.
+       * @return This builder for chaining.
+       */
+      public Builder setTypeBytes(
+          com.google.protobuf.ByteString value) {
+        if (value == null) {
+    throw new NullPointerException();
+  }
+  checkByteStringIsUtf8(value);
+        
+        type_ = value;
+        onChanged();
+        return this;
+      }
+
+      private java.util.List<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message> batchMessage_ =
+        java.util.Collections.emptyList();
+      private void ensureBatchMessageIsMutable() {
+        if (!((bitField0_ & 0x00000001) != 0)) {
+          batchMessage_ = new java.util.ArrayList<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message>(batchMessage_);
+          bitField0_ |= 0x00000001;
+         }
+      }
+
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder> batchMessageBuilder_;
+
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public java.util.List<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message> getBatchMessageList() {
+        if (batchMessageBuilder_ == null) {
+          return java.util.Collections.unmodifiableList(batchMessage_);
+        } else {
+          return batchMessageBuilder_.getMessageList();
+        }
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public int getBatchMessageCount() {
+        if (batchMessageBuilder_ == null) {
+          return batchMessage_.size();
+        } else {
+          return batchMessageBuilder_.getCount();
+        }
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message getBatchMessage(int index) {
+        if (batchMessageBuilder_ == null) {
+          return batchMessage_.get(index);
+        } else {
+          return batchMessageBuilder_.getMessage(index);
+        }
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder setBatchMessage(
+          int index, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message value) {
+        if (batchMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureBatchMessageIsMutable();
+          batchMessage_.set(index, value);
+          onChanged();
+        } else {
+          batchMessageBuilder_.setMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder setBatchMessage(
+          int index, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder builderForValue) {
+        if (batchMessageBuilder_ == null) {
+          ensureBatchMessageIsMutable();
+          batchMessage_.set(index, builderForValue.build());
+          onChanged();
+        } else {
+          batchMessageBuilder_.setMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder addBatchMessage(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message value) {
+        if (batchMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureBatchMessageIsMutable();
+          batchMessage_.add(value);
+          onChanged();
+        } else {
+          batchMessageBuilder_.addMessage(value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder addBatchMessage(
+          int index, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message value) {
+        if (batchMessageBuilder_ == null) {
+          if (value == null) {
+            throw new NullPointerException();
+          }
+          ensureBatchMessageIsMutable();
+          batchMessage_.add(index, value);
+          onChanged();
+        } else {
+          batchMessageBuilder_.addMessage(index, value);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder addBatchMessage(
+          com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder builderForValue) {
+        if (batchMessageBuilder_ == null) {
+          ensureBatchMessageIsMutable();
+          batchMessage_.add(builderForValue.build());
+          onChanged();
+        } else {
+          batchMessageBuilder_.addMessage(builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder addBatchMessage(
+          int index, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder builderForValue) {
+        if (batchMessageBuilder_ == null) {
+          ensureBatchMessageIsMutable();
+          batchMessage_.add(index, builderForValue.build());
+          onChanged();
+        } else {
+          batchMessageBuilder_.addMessage(index, builderForValue.build());
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder addAllBatchMessage(
+          java.lang.Iterable<? extends com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message> values) {
+        if (batchMessageBuilder_ == null) {
+          ensureBatchMessageIsMutable();
+          com.google.protobuf.AbstractMessageLite.Builder.addAll(
+              values, batchMessage_);
+          onChanged();
+        } else {
+          batchMessageBuilder_.addAllMessages(values);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder clearBatchMessage() {
+        if (batchMessageBuilder_ == null) {
+          batchMessage_ = java.util.Collections.emptyList();
+          bitField0_ = (bitField0_ & ~0x00000001);
+          onChanged();
+        } else {
+          batchMessageBuilder_.clear();
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public Builder removeBatchMessage(int index) {
+        if (batchMessageBuilder_ == null) {
+          ensureBatchMessageIsMutable();
+          batchMessage_.remove(index);
+          onChanged();
+        } else {
+          batchMessageBuilder_.remove(index);
+        }
+        return this;
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder getBatchMessageBuilder(
+          int index) {
+        return getBatchMessageFieldBuilder().getBuilder(index);
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder getBatchMessageOrBuilder(
+          int index) {
+        if (batchMessageBuilder_ == null) {
+          return batchMessage_.get(index);  } else {
+          return batchMessageBuilder_.getMessageOrBuilder(index);
+        }
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public java.util.List<? extends com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder> 
+           getBatchMessageOrBuilderList() {
+        if (batchMessageBuilder_ != null) {
+          return batchMessageBuilder_.getMessageOrBuilderList();
+        } else {
+          return java.util.Collections.unmodifiableList(batchMessage_);
+        }
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder addBatchMessageBuilder() {
+        return getBatchMessageFieldBuilder().addBuilder(
+            com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder addBatchMessageBuilder(
+          int index) {
+        return getBatchMessageFieldBuilder().addBuilder(
+            index, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.getDefaultInstance());
+      }
+      /**
+       * <code>repeated .Message batchMessage = 2;</code>
+       */
+      public java.util.List<com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder> 
+           getBatchMessageBuilderList() {
+        return getBatchMessageFieldBuilder().getBuilderList();
+      }
+      private com.google.protobuf.RepeatedFieldBuilderV3<
+          com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder> 
+          getBatchMessageFieldBuilder() {
+        if (batchMessageBuilder_ == null) {
+          batchMessageBuilder_ = new com.google.protobuf.RepeatedFieldBuilderV3<
+              com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.Message.Builder, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageOrBuilder>(
+                  batchMessage_,
+                  ((bitField0_ & 0x00000001) != 0),
+                  getParentForChildren(),
+                  isClean());
+          batchMessage_ = null;
+        }
+        return batchMessageBuilder_;
+      }
+      @java.lang.Override
+      public final Builder setUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.setUnknownFields(unknownFields);
+      }
+
+      @java.lang.Override
+      public final Builder mergeUnknownFields(
+          final com.google.protobuf.UnknownFieldSet unknownFields) {
+        return super.mergeUnknownFields(unknownFields);
+      }
+
+
+      // @@protoc_insertion_point(builder_scope:MessageChunkInfo)
+    }
+
+    // @@protoc_insertion_point(class_scope:MessageChunkInfo)
+    private static final com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo DEFAULT_INSTANCE;
+    static {
+      DEFAULT_INSTANCE = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo();
+    }
+
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo getDefaultInstance() {
+      return DEFAULT_INSTANCE;
+    }
+
+    private static final com.google.protobuf.Parser<MessageChunkInfo>
+        PARSER = new com.google.protobuf.AbstractParser<MessageChunkInfo>() {
+      @java.lang.Override
+      public MessageChunkInfo parsePartialFrom(
+          com.google.protobuf.CodedInputStream input,
+          com.google.protobuf.ExtensionRegistryLite extensionRegistry)
+          throws com.google.protobuf.InvalidProtocolBufferException {
+        return new MessageChunkInfo(input, extensionRegistry);
+      }
+    };
+
+    public static com.google.protobuf.Parser<MessageChunkInfo> parser() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.google.protobuf.Parser<MessageChunkInfo> getParserForType() {
+      return PARSER;
+    }
+
+    @java.lang.Override
+    public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.MessageChunkInfo getDefaultInstanceForType() {
+      return DEFAULT_INSTANCE;
+    }
+
+  }
+
+  public interface HotKeyChunkInfoOrBuilder extends
+      // @@protoc_insertion_point(interface_extends:HotKeyChunkInfo)
       com.google.protobuf.MessageOrBuilder {
 
     /**
@@ -870,18 +1744,18 @@ public final class DataModel {
         getDataBytes(int index);
   }
   /**
-   * Protobuf type {@code ChunkInfo}
+   * Protobuf type {@code HotKeyChunkInfo}
    */
-  public static final class ChunkInfo extends
+  public static final class HotKeyChunkInfo extends
       com.google.protobuf.GeneratedMessageV3 implements
-      // @@protoc_insertion_point(message_implements:ChunkInfo)
-      ChunkInfoOrBuilder {
+      // @@protoc_insertion_point(message_implements:HotKeyChunkInfo)
+      HotKeyChunkInfoOrBuilder {
   private static final long serialVersionUID = 0L;
-    // Use ChunkInfo.newBuilder() to construct.
-    private ChunkInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
+    // Use HotKeyChunkInfo.newBuilder() to construct.
+    private HotKeyChunkInfo(com.google.protobuf.GeneratedMessageV3.Builder<?> builder) {
       super(builder);
     }
-    private ChunkInfo() {
+    private HotKeyChunkInfo() {
       type_ = "";
       sessionId_ = "";
       data_ = com.google.protobuf.LazyStringArrayList.EMPTY;
@@ -891,7 +1765,7 @@ public final class DataModel {
     @SuppressWarnings({"unused"})
     protected java.lang.Object newInstance(
         UnusedPrivateParameter unused) {
-      return new ChunkInfo();
+      return new HotKeyChunkInfo();
     }
 
     @java.lang.Override
@@ -899,7 +1773,7 @@ public final class DataModel {
     getUnknownFields() {
       return this.unknownFields;
     }
-    private ChunkInfo(
+    private HotKeyChunkInfo(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
@@ -975,15 +1849,15 @@ public final class DataModel {
     }
     public static final com.google.protobuf.Descriptors.Descriptor
         getDescriptor() {
-      return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_ChunkInfo_descriptor;
+      return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_HotKeyChunkInfo_descriptor;
     }
 
     @java.lang.Override
     protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
         internalGetFieldAccessorTable() {
-      return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_ChunkInfo_fieldAccessorTable
+      return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_HotKeyChunkInfo_fieldAccessorTable
           .ensureFieldAccessorsInitialized(
-              com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.Builder.class);
+              com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.Builder.class);
     }
 
     public static final int TYPE_FIELD_NUMBER = 1;
@@ -1197,10 +2071,10 @@ public final class DataModel {
       if (obj == this) {
        return true;
       }
-      if (!(obj instanceof com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo)) {
+      if (!(obj instanceof com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo)) {
         return super.equals(obj);
       }
-      com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo other = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo) obj;
+      com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo other = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo) obj;
 
       if (!getType()
           .equals(other.getType())) return false;
@@ -1240,69 +2114,69 @@ public final class DataModel {
       return hash;
     }
 
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         java.nio.ByteBuffer data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         java.nio.ByteBuffer data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         com.google.protobuf.ByteString data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         com.google.protobuf.ByteString data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(byte[] data)
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(byte[] data)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         byte[] data,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws com.google.protobuf.InvalidProtocolBufferException {
       return PARSER.parseFrom(data, extensionRegistry);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(java.io.InputStream input)
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseDelimitedFrom(java.io.InputStream input)
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseDelimitedFrom(java.io.InputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseDelimitedFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseDelimitedFrom(
         java.io.InputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseDelimitedWithIOException(PARSER, input, extensionRegistry);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         com.google.protobuf.CodedInputStream input)
         throws java.io.IOException {
       return com.google.protobuf.GeneratedMessageV3
           .parseWithIOException(PARSER, input);
     }
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parseFrom(
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parseFrom(
         com.google.protobuf.CodedInputStream input,
         com.google.protobuf.ExtensionRegistryLite extensionRegistry)
         throws java.io.IOException {
@@ -1315,7 +2189,7 @@ public final class DataModel {
     public static Builder newBuilder() {
       return DEFAULT_INSTANCE.toBuilder();
     }
-    public static Builder newBuilder(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo prototype) {
+    public static Builder newBuilder(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo prototype) {
       return DEFAULT_INSTANCE.toBuilder().mergeFrom(prototype);
     }
     @java.lang.Override
@@ -1331,26 +2205,26 @@ public final class DataModel {
       return builder;
     }
     /**
-     * Protobuf type {@code ChunkInfo}
+     * Protobuf type {@code HotKeyChunkInfo}
      */
     public static final class Builder extends
         com.google.protobuf.GeneratedMessageV3.Builder<Builder> implements
-        // @@protoc_insertion_point(builder_implements:ChunkInfo)
-        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfoOrBuilder {
+        // @@protoc_insertion_point(builder_implements:HotKeyChunkInfo)
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfoOrBuilder {
       public static final com.google.protobuf.Descriptors.Descriptor
           getDescriptor() {
-        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_ChunkInfo_descriptor;
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_HotKeyChunkInfo_descriptor;
       }
 
       @java.lang.Override
       protected com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
           internalGetFieldAccessorTable() {
-        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_ChunkInfo_fieldAccessorTable
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_HotKeyChunkInfo_fieldAccessorTable
             .ensureFieldAccessorsInitialized(
-                com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.Builder.class);
+                com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.class, com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.Builder.class);
       }
 
-      // Construct using com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.newBuilder()
+      // Construct using com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.newBuilder()
       private Builder() {
         maybeForceBuilderInitialization();
       }
@@ -1384,17 +2258,17 @@ public final class DataModel {
       @java.lang.Override
       public com.google.protobuf.Descriptors.Descriptor
           getDescriptorForType() {
-        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_ChunkInfo_descriptor;
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.internal_static_HotKeyChunkInfo_descriptor;
       }
 
       @java.lang.Override
-      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo getDefaultInstanceForType() {
-        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.getDefaultInstance();
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo getDefaultInstanceForType() {
+        return com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.getDefaultInstance();
       }
 
       @java.lang.Override
-      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo build() {
-        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo result = buildPartial();
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo build() {
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo result = buildPartial();
         if (!result.isInitialized()) {
           throw newUninitializedMessageException(result);
         }
@@ -1402,8 +2276,8 @@ public final class DataModel {
       }
 
       @java.lang.Override
-      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo buildPartial() {
-        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo result = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo(this);
+      public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo buildPartial() {
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo result = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo(this);
         int from_bitField0_ = bitField0_;
         result.type_ = type_;
         result.sessionId_ = sessionId_;
@@ -1452,16 +2326,16 @@ public final class DataModel {
       }
       @java.lang.Override
       public Builder mergeFrom(com.google.protobuf.Message other) {
-        if (other instanceof com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo) {
-          return mergeFrom((com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo)other);
+        if (other instanceof com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo) {
+          return mergeFrom((com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo)other);
         } else {
           super.mergeFrom(other);
           return this;
         }
       }
 
-      public Builder mergeFrom(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo other) {
-        if (other == com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo.getDefaultInstance()) return this;
+      public Builder mergeFrom(com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo other) {
+        if (other == com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo.getDefaultInstance()) return this;
         if (!other.getType().isEmpty()) {
           type_ = other.type_;
           onChanged();
@@ -1501,11 +2375,11 @@ public final class DataModel {
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws java.io.IOException {
-        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo parsedMessage = null;
+        com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo parsedMessage = null;
         try {
           parsedMessage = PARSER.parsePartialFrom(input, extensionRegistry);
         } catch (com.google.protobuf.InvalidProtocolBufferException e) {
-          parsedMessage = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo) e.getUnfinishedMessage();
+          parsedMessage = (com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo) e.getUnfinishedMessage();
           throw e.unwrapIOException();
         } finally {
           if (parsedMessage != null) {
@@ -1872,41 +2746,41 @@ public final class DataModel {
       }
 
 
-      // @@protoc_insertion_point(builder_scope:ChunkInfo)
+      // @@protoc_insertion_point(builder_scope:HotKeyChunkInfo)
     }
 
-    // @@protoc_insertion_point(class_scope:ChunkInfo)
-    private static final com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo DEFAULT_INSTANCE;
+    // @@protoc_insertion_point(class_scope:HotKeyChunkInfo)
+    private static final com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo DEFAULT_INSTANCE;
     static {
-      DEFAULT_INSTANCE = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo();
+      DEFAULT_INSTANCE = new com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo();
     }
 
-    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo getDefaultInstance() {
+    public static com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo getDefaultInstance() {
       return DEFAULT_INSTANCE;
     }
 
-    private static final com.google.protobuf.Parser<ChunkInfo>
-        PARSER = new com.google.protobuf.AbstractParser<ChunkInfo>() {
+    private static final com.google.protobuf.Parser<HotKeyChunkInfo>
+        PARSER = new com.google.protobuf.AbstractParser<HotKeyChunkInfo>() {
       @java.lang.Override
-      public ChunkInfo parsePartialFrom(
+      public HotKeyChunkInfo parsePartialFrom(
           com.google.protobuf.CodedInputStream input,
           com.google.protobuf.ExtensionRegistryLite extensionRegistry)
           throws com.google.protobuf.InvalidProtocolBufferException {
-        return new ChunkInfo(input, extensionRegistry);
+        return new HotKeyChunkInfo(input, extensionRegistry);
       }
     };
 
-    public static com.google.protobuf.Parser<ChunkInfo> parser() {
+    public static com.google.protobuf.Parser<HotKeyChunkInfo> parser() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.google.protobuf.Parser<ChunkInfo> getParserForType() {
+    public com.google.protobuf.Parser<HotKeyChunkInfo> getParserForType() {
       return PARSER;
     }
 
     @java.lang.Override
-    public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.ChunkInfo getDefaultInstanceForType() {
+    public com.kuma.tools.dynamicHotCompute.protobuf.DataModel.HotKeyChunkInfo getDefaultInstanceForType() {
       return DEFAULT_INSTANCE;
     }
 
@@ -1918,10 +2792,15 @@ public final class DataModel {
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
       internal_static_Message_fieldAccessorTable;
   private static final com.google.protobuf.Descriptors.Descriptor
-    internal_static_ChunkInfo_descriptor;
+    internal_static_MessageChunkInfo_descriptor;
   private static final 
     com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
-      internal_static_ChunkInfo_fieldAccessorTable;
+      internal_static_MessageChunkInfo_fieldAccessorTable;
+  private static final com.google.protobuf.Descriptors.Descriptor
+    internal_static_HotKeyChunkInfo_descriptor;
+  private static final 
+    com.google.protobuf.GeneratedMessageV3.FieldAccessorTable
+      internal_static_HotKeyChunkInfo_fieldAccessorTable;
 
   public static com.google.protobuf.Descriptors.FileDescriptor
       getDescriptor() {
@@ -1931,13 +2810,15 @@ public final class DataModel {
       descriptor;
   static {
     java.lang.String[] descriptorData = {
-      "\n\037src/main/protobuf/message.proto\"J\n\007Mes" +
-      "sage\022\020\n\010pingpong\030\001 \001(\010\022\013\n\003key\030\002 \001(\t\022\r\n\005c" +
-      "ount\030\003 \001(\005\022\021\n\ttimestamp\030\004 \001(\003\"a\n\tChunkIn" +
-      "fo\022\014\n\004type\030\001 \001(\t\022\021\n\tsessionId\030\002 \001(\t\022\021\n\tc" +
-      "hunkSize\030\003 \001(\005\022\022\n\nchunkIndex\030\004 \001(\005\022\014\n\004da" +
-      "ta\030\005 \003(\tB6\n)com.kuma.tools.dynamicHotCom" +
-      "pute.protobufB\tDataModelb\006proto3"
+      "\n\037src/main/protobuf/message.proto\"8\n\007Mes" +
+      "sage\022\013\n\003key\030\001 \001(\t\022\r\n\005count\030\002 \001(\005\022\021\n\ttime" +
+      "stamp\030\003 \001(\003\"@\n\020MessageChunkInfo\022\014\n\004type\030" +
+      "\001 \001(\t\022\036\n\014batchMessage\030\002 \003(\0132\010.Message\"g\n" +
+      "\017HotKeyChunkInfo\022\014\n\004type\030\001 \001(\t\022\021\n\tsessio" +
+      "nId\030\002 \001(\t\022\021\n\tchunkSize\030\003 \001(\005\022\022\n\nchunkInd" +
+      "ex\030\004 \001(\005\022\014\n\004data\030\005 \003(\tB6\n)com.kuma.tools" +
+      ".dynamicHotCompute.protobufB\tDataModelb\006" +
+      "proto3"
     };
     descriptor = com.google.protobuf.Descriptors.FileDescriptor
       .internalBuildGeneratedFileFrom(descriptorData,
@@ -1948,12 +2829,18 @@ public final class DataModel {
     internal_static_Message_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
         internal_static_Message_descriptor,
-        new java.lang.String[] { "Pingpong", "Key", "Count", "Timestamp", });
-    internal_static_ChunkInfo_descriptor =
+        new java.lang.String[] { "Key", "Count", "Timestamp", });
+    internal_static_MessageChunkInfo_descriptor =
       getDescriptor().getMessageTypes().get(1);
-    internal_static_ChunkInfo_fieldAccessorTable = new
+    internal_static_MessageChunkInfo_fieldAccessorTable = new
       com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
-        internal_static_ChunkInfo_descriptor,
+        internal_static_MessageChunkInfo_descriptor,
+        new java.lang.String[] { "Type", "BatchMessage", });
+    internal_static_HotKeyChunkInfo_descriptor =
+      getDescriptor().getMessageTypes().get(2);
+    internal_static_HotKeyChunkInfo_fieldAccessorTable = new
+      com.google.protobuf.GeneratedMessageV3.FieldAccessorTable(
+        internal_static_HotKeyChunkInfo_descriptor,
         new java.lang.String[] { "Type", "SessionId", "ChunkSize", "ChunkIndex", "Data", });
   }
 

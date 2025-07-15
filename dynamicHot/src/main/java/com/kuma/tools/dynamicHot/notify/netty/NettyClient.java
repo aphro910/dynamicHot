@@ -1,5 +1,6 @@
 package com.kuma.tools.dynamicHot.notify.netty;
 
+import com.kuma.tools.dynamicHot.consts.Constants;
 import com.kuma.tools.dynamicHot.notify.register.protobuf.DataModel;
 import com.kuma.tools.dynamicHot.utils.CompressUtil;
 import io.netty.bootstrap.Bootstrap;
@@ -23,11 +24,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
+import java.io.IOException;
 import java.net.URI;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
@@ -42,6 +41,9 @@ public class NettyClient {
     private EventLoopGroup eventLoopGroup = new NioEventLoopGroup(5);
 
     private List<String> hostList = new ArrayList<>();
+    private List<List<DataModel.Message>> batchList;
+
+    private static final int CHUNK_SIZE = 1000;
 
     public static void remove(Channel channel) {
         for (Map.Entry<String, Channel> entry : connections.entrySet()) {
@@ -104,33 +106,61 @@ public class NettyClient {
         long timestamp = System.currentTimeMillis();
         if (hostList.size() != keySet.size()) {
             hostList = keySet.stream().sorted().collect(Collectors.toList());
+            batchList = new ArrayList<>();
+            for (int i = 0; i < hostList.size(); i++) {
+                batchList.add(new ArrayList<>());
+            }
         }
-        if (hostList.isEmpty()) {
+        if (hostList.isEmpty() || batchList.isEmpty()) {
             return;
         }
         for (Map.Entry<String, Integer> entry : data.entrySet()) {
             String key = entry.getKey();
             Integer count = entry.getValue();
-            int hash = Math.abs(key.hashCode()) % hostList.size();
-            String host = hostList.get(hash);
-            Channel channel = connections.get(host);
-            if (channel == null) {
-                return;
-            }
-            DataModel.Message request = DataModel.Message.newBuilder()
-                    .setPingpong(false)
+            int hash = Math.abs(key.hashCode()) % batchList.size();
+            DataModel.Message message = DataModel.Message.newBuilder()
                     .setKey(key)
                     .setCount(count)
                     .setTimestamp(timestamp)
                     .build();
+            batchList.get(hash).add(message);
+        }
+
+        for (int i = 0; i < batchList.size(); i++) {
+            batchSendInChunks(batchList.get(i), i);
+        }
+
+        clearBatchList();
+    }
+
+    private void clearBatchList() {
+        for (List<DataModel.Message> messages : batchList) {
+            messages.clear();
+        }
+    }
+
+    private void batchSendInChunks(List<DataModel.Message> list, int index) {
+        Channel channel = connections.get(hostList.get(index));
+        int totalChunks = (int) Math.ceil((double) list.size() / CHUNK_SIZE);
+        for (int i = 0; i < totalChunks; i++) {
+            int start = i * CHUNK_SIZE;
+            int end = Math.min(start + CHUNK_SIZE, list.size());
+            List<DataModel.Message> chunkList = list.subList(start, end);
+
+            // 构建分块数据
+            DataModel.MessageChunkInfo chunkData = DataModel.MessageChunkInfo.newBuilder()
+                    .setType(Constants.CHUNK_DATA)
+                    .addAllBatchMessage(chunkList)
+                    .build();
+
             try {
-                byte[] compressed = CompressUtil.compress(request.toByteArray());
+                // 压缩并发送
+                byte[] compressed = CompressUtil.compress(chunkData.toByteArray());
                 ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
                 channel.writeAndFlush(new BinaryWebSocketFrame(buffer));
-            } catch (Exception e) {
+            } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
     }
 

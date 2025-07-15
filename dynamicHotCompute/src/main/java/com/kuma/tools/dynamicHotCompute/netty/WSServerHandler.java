@@ -1,5 +1,6 @@
 package com.kuma.tools.dynamicHotCompute.netty;
 
+import com.kuma.tools.dynamicHotCompute.consts.Constants;
 import com.kuma.tools.dynamicHotCompute.context.ChannelContext;
 import com.kuma.tools.dynamicHotCompute.handler.HotKeyHandler;
 import com.kuma.tools.dynamicHotCompute.protobuf.DataModel;
@@ -14,6 +15,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
+
+import java.util.List;
 
 
 @Component
@@ -38,12 +41,15 @@ public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocket
             byte[] bytes = new byte[content.readableBytes()];
             content.readBytes(bytes); // 读取为 byte[]
             byte[] res = CompressUtil.decompressToByteArray(bytes);
-            DataModel.Message message = DataModel.Message.parseFrom(res);
-            if (message.getPingpong()) {
+            DataModel.MessageChunkInfo messageChunk = DataModel.MessageChunkInfo.parseFrom(res);
+            if (messageChunk.getType().equals(Constants.CHUNK_PING)) {
                 return;
             }
-            log.debug("channel received message: {}" , message);
-            hotKeyHandler.add(message);
+            List<DataModel.Message> messageList = messageChunk.getBatchMessageList();
+            log.debug("channel received message: {}" , messageList);
+            for (DataModel.Message message : messageList) {
+                hotKeyHandler.add(message);
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
