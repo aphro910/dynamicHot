@@ -82,8 +82,11 @@ public class HotKeyHandler {
         String key = message.getKey();
         keyMap.computeIfAbsent(key, k -> new ArrayDeque<>()).addFirst(message);
         //移除过期的数据
-        if (keyMap.get(key).getLast().getTimestamp() < System.currentTimeMillis() - timeRange) {
+        if (keyMap.get(key).getLast().getTimestamp() < (System.currentTimeMillis() - timeRange)) {
             keyMap.get(key).removeLast();
+            if (keyMap.get(key).isEmpty()) {
+                keyMap.remove(key);
+            }
         }
     }
 

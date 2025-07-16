@@ -17,22 +17,26 @@ public class NacosRegister implements Register {
 
     @Value("${spring.cloud.nacos.config.server-addr:127.0.0.1:8848}")
     private String serverAddr;
-    @Value("${spring.regist.servername:hotkey-netty}")
+    @Value("${spring.register.servername:hotkey-netty}")
     private String serverName;
-    @Value("${spring.regist.namespace:public}")
+    @Value("${spring.register.namespace:public}")
     private String namespace;
     @Value("${server.port:8080}")
     private int port;
+    @Value("${spring.register.ip:}")
+    private String ip;
 
     private NamingService namingService;
-    private String localHost;
+
 
     @Override
     @PostConstruct
     public void initChannel() {
         try {
-            InetAddress inetAddress = InetAddress.getLocalHost();
-            localHost = inetAddress.getHostAddress();
+            if (ip == null || ip.isEmpty()) {
+                InetAddress inetAddress = InetAddress.getLocalHost();
+                ip = inetAddress.getHostAddress();
+            }
             register();
         } catch (Exception e) {
             e.printStackTrace();
@@ -45,7 +49,7 @@ public class NacosRegister implements Register {
         properties.put("namespace", namespace);
         try {
             namingService = NamingFactory.createNamingService(properties);
-            namingService.registerInstance(serverName, localHost, port);
+            namingService.registerInstance(serverName, ip, port);
         } catch (Exception e) {
             e.printStackTrace();
         }
