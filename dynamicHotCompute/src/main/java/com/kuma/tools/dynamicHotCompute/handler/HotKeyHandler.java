@@ -72,7 +72,7 @@ public class HotKeyHandler {
         }
 
         singleScheduledThreadPool.scheduleWithFixedDelay(this::compute, 0, 10, TimeUnit.MILLISECONDS);
-        hotkeySaveThreadPool.scheduleWithFixedDelay(this::saveHotKeyHistory, 500, 500, TimeUnit.MILLISECONDS);
+        hotkeySaveThreadPool.scheduleWithFixedDelay(this::saveHotKeyHistory, 500, timeRange, TimeUnit.MILLISECONDS);
     }
 
     public boolean hasHotKey() {
