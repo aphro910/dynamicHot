@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Configuration;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
 
 @Configuration
 public class ThreadPoolConfig {
@@ -14,9 +15,13 @@ public class ThreadPoolConfig {
         return Executors.newCachedThreadPool();
     }
 
-    @Bean(value = "singleThreadPool")
-    public ExecutorService singleExecutor() {
-        return Executors.newSingleThreadExecutor();
+    @Bean(value = "singleScheduledThreadPool")
+    public ScheduledExecutorService singleScheduledThreadPool() {
+        return Executors.newSingleThreadScheduledExecutor();
     }
 
+    @Bean(value = "hotkeySaveThreadPool")
+    public ScheduledExecutorService hotkeySaveThreadPool() {
+        return Executors.newSingleThreadScheduledExecutor();
+    }
 }
