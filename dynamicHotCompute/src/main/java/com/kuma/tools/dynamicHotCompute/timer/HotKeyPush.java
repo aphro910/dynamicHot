@@ -14,8 +14,8 @@ public class HotKeyPush {
     @Scheduled(initialDelayString = "${spring.dynamic.hotkey.compute.initial-delay:500}",
             fixedRateString = "${spring.dynamic.hotkey.compute.fixed-rate:500}")
     public void push() {
-        if (!hotKeyHandler.isEmpty()) {
-            hotKeyHandler.push();
+        if (!hotKeyHandler.hasHotKey()) {
+            hotKeyHandler.pushToClient();
         }
     }
 }

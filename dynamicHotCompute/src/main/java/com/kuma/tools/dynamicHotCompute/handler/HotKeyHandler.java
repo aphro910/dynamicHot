@@ -3,6 +3,8 @@ package com.kuma.tools.dynamicHotCompute.handler;
 import com.googlecode.concurrentlinkedhashmap.ConcurrentLinkedHashMap;
 import com.kuma.tools.dynamicHotCompute.consts.Constants;
 import com.kuma.tools.dynamicHotCompute.context.ChannelContext;
+import com.kuma.tools.dynamicHotCompute.elasticsearch.entity.HotKeyEntity;
+import com.kuma.tools.dynamicHotCompute.mapper.HotKeyMapper;
 import com.kuma.tools.dynamicHotCompute.protobuf.DataModel;
 import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
@@ -20,20 +22,26 @@ import javax.annotation.PreDestroy;
 import java.io.IOException;
 import java.util.*;
 import java.util.concurrent.*;
+import java.util.stream.Collectors;
 
 @Component
 public class HotKeyHandler {
 
     private static final Logger log = LoggerFactory.getLogger(HotKeyHandler.class);
     private Map<String, Deque<DataModel.Message>> keyMap;
-    private List<String> hotKeyList;
+    private List<HotKeyEntity> hotKeyList;
 
     @Autowired
     @Qualifier("hotKeyComputeThreadPool")
-    private ExecutorService hotKeyComputeExecutor;
+    private ExecutorService hotKeyComputeThreadPool;
     @Autowired
-    @Qualifier("singleThreadPool")
-    private ExecutorService singleExecutor;
+    @Qualifier("singleScheduledThreadPool")
+    private ScheduledExecutorService singleScheduledThreadPool;
+    @Autowired
+    @Qualifier("hotkeySaveThreadPool")
+    private ScheduledExecutorService hotkeySaveThreadPool;
+    @Autowired
+    private HotKeyMapper hotKeyMapper;
 
     @Value("${spring.dynamic.hotkey.compute.maxKeySize:-1}")
     private Integer maxKeySize;
@@ -42,7 +50,6 @@ public class HotKeyHandler {
     @Value("${spring.dynamic.hotkey.compute.hotCount:5000}")
     private int hotCount;
 
-    private boolean isStop = false;
     private static final int CHUNK_SIZE = 1000; // 每块1000个键
     private List<List<Deque<DataModel.Message>>> dequeList;
     private static final int concurrency = 16; //此处需为2^n,否则下面的取模运算会出问题
@@ -64,17 +71,11 @@ public class HotKeyHandler {
             dequeList.add(new ArrayList<>());
         }
 
-        singleExecutor.execute(new Runnable() {
-            @Override
-            public void run() {
-                while (!isStop) {
-                    compute();
-                }
-            }
-        });
+        singleScheduledThreadPool.scheduleWithFixedDelay(this::compute, 0, 10, TimeUnit.MILLISECONDS);
+        hotkeySaveThreadPool.scheduleWithFixedDelay(this::saveHotKeyHistory, 500, 500, TimeUnit.MILLISECONDS);
     }
 
-    public boolean isEmpty() {
+    public boolean hasHotKey() {
         return hotKeyList.isEmpty();
     }
 
@@ -99,8 +100,8 @@ public class HotKeyHandler {
                 log.error(e.getMessage());
             }
         }
-        List<String> hotKeyList = new ArrayList<>();
-        List<Future<List<String>>> futures = new ArrayList<>();
+        List<HotKeyEntity> hotKeyList = new ArrayList<>();
+        List<Future<List<HotKeyEntity>>> futures = new ArrayList<>();
 
         for (Map.Entry<String, Deque<DataModel.Message>> entry : keyMap.entrySet()) {
             String key = entry.getKey();
@@ -110,9 +111,9 @@ public class HotKeyHandler {
 
         for (List<Deque<DataModel.Message>> item : dequeList) {
             try {
-                Future<List<String>> future = hotKeyComputeExecutor.submit(new Callable<List<String>>() {
+                Future<List<HotKeyEntity>> future = hotKeyComputeThreadPool.submit(new Callable<List<HotKeyEntity>>() {
                     @Override
-                    public List<String> call() throws Exception {
+                    public List<HotKeyEntity> call() throws Exception {
                         return executeBatch(item);
                     }
                 });
@@ -122,9 +123,9 @@ public class HotKeyHandler {
             }
         }
 
-        for (Future<List<String>> future : futures) {
+        for (Future<List<HotKeyEntity>> future : futures) {
             try {
-                List<String> hotkeys = future.get();
+                List<HotKeyEntity> hotkeys = future.get();
                 hotKeyList.addAll(hotkeys);
             } catch (ExecutionException | InterruptedException e) {
                 return;
@@ -141,15 +142,21 @@ public class HotKeyHandler {
         }
     }
 
-    public void push() {
+    public void pushToClient() {
         if (!hotKeyList.isEmpty()) {
             sendHotKeysInChunks(hotKeyList);
         }
     }
 
-    private List<String> executeBatch(List<Deque<DataModel.Message>> batch) {
+    public void saveHotKeyHistory() {
+        if (!hotKeyList.isEmpty()) {
+            saveToES(hotKeyList);
+        }
+    }
+
+    private List<HotKeyEntity> executeBatch(List<Deque<DataModel.Message>> batch) {
         long nowTime = System.currentTimeMillis();
-        List<String> hotKeyList = new ArrayList<>();
+        List<HotKeyEntity> hotKeyList = new ArrayList<>();
         for (Deque<DataModel.Message> messages : batch) {
             if (messages.isEmpty()) {
                 break;
@@ -158,20 +165,24 @@ public class HotKeyHandler {
             for (DataModel.Message message : messages) {
                 if (nowTime - timeRange <= message.getTimestamp()) {
                     count += message.getCount();
-                    if (count >= hotCount) {
-                        hotKeyList.add(message.getKey());
-                        break;
-                    }
                 } else {
                     break;
                 }
+            }
+            if (count >= hotCount) {
+                HotKeyEntity hotKeyEntity = new HotKeyEntity();
+                hotKeyEntity.setKey(messages.getFirst().getKey());
+                hotKeyEntity.setTimestamp(nowTime);
+                hotKeyEntity.setCount(count);
+                hotKeyList.add(hotKeyEntity);
             }
         }
         return hotKeyList;
     }
 
     // 分块发送热键列表
-    private void sendHotKeysInChunks(List<String> hotKeyList) {
+    private void sendHotKeysInChunks(List<HotKeyEntity> hotKeyEntityList) {
+        List<String> hotKeyList = hotKeyEntityList.stream().map(HotKeyEntity::getKey).collect(Collectors.toList());
         String sessionId = UUID.randomUUID().toString();
         int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
         // 发送开始标记
@@ -230,11 +241,20 @@ public class HotKeyHandler {
         }
     }
 
+    public void saveToES(List<HotKeyEntity> hotKeyList) {
+        int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
+        for (int i = 0; i < totalChunks; i++) {
+            int start = i * CHUNK_SIZE;
+            int end = Math.min(start + CHUNK_SIZE, hotKeyList.size());
+            List<HotKeyEntity> subList = hotKeyList.subList(start, end);
+            hotKeyMapper.saveAll(subList);
+        }
+    }
+
     @PreDestroy
     public void stop() {
-        isStop = true;
-        singleExecutor.shutdown();
-        hotKeyComputeExecutor.shutdown();
-
+        singleScheduledThreadPool.shutdown();
+        hotKeyComputeThreadPool.shutdown();
+        hotkeySaveThreadPool.shutdown();
     }
 }
