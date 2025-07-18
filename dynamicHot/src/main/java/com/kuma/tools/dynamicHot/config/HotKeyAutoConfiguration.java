@@ -8,7 +8,6 @@ import com.kuma.tools.dynamicHot.notify.Notify;
 import com.kuma.tools.dynamicHot.notify.netty.ClientHandler;
 import com.kuma.tools.dynamicHot.notify.netty.NettyClient;
 import com.kuma.tools.dynamicHot.notify.register.NacosRegister;
-import com.kuma.tools.dynamicHot.timer.HotKeyReport;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.cache.CacheManager;
@@ -25,12 +24,6 @@ public class HotKeyAutoConfiguration {
     @ConditionalOnMissingBean
     public HotKeyDetect hotKeyDetect() {
         return new HotKeyDetect();
-    }
-
-    @Bean
-    @ConditionalOnMissingBean
-    public HotKeyReport HotKeyReport() {
-        return new HotKeyReport();
     }
 
     @Bean
