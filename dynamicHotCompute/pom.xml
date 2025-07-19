@@ -6,9 +6,9 @@
 
     <groupId>com.kuma.tools</groupId>
     <artifactId>dynamicHotCompute</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-    <name>dynamicHotNotice</name>
-    <description>Demo project for Spring Boot</description>
+    <version>1.0.0</version>
+    <name>dynamicHotCompute</name>
+    <description>Dynamic Hot Key Compute Server</description>
     <properties>
         <java.version>1.8</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
