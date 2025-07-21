@@ -184,7 +184,10 @@ public class HotKeyHandler {
         List<String> hotKeyList = hotKeyEntityList.stream().map(HotKeyEntity::getKey).collect(Collectors.toList());
         String sessionId = UUID.randomUUID().toString();
         int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
-        ByteBufAllocator allocator = ChannelContext.channelGroup.iterator().next().alloc();
+        ByteBufAllocator allocator = ByteBufAllocator.DEFAULT;
+        if (!ChannelContext.channelGroup.isEmpty()) {
+            allocator = ChannelContext.channelGroup.iterator().next().alloc();
+        }
         // 发送开始标记
         DataModel.HotKeyChunkInfo chunkStart = DataModel.HotKeyChunkInfo.newBuilder()
                 .setType(Constants.CHUNK_START)
@@ -197,7 +200,7 @@ public class HotKeyHandler {
 
             ByteBuf buffer = allocator.buffer(compressed.length);
             buffer.writeBytes(compressed);
-            ChannelContext.channelGroup.writeAndFlush(buffer);
+            ChannelContext.channelGroup.writeAndFlush(buffer.duplicate());
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -223,7 +226,7 @@ public class HotKeyHandler {
 
                 ByteBuf buffer = allocator.buffer(compressed.length);
                 buffer.writeBytes(compressed);
-                ChannelContext.channelGroup.writeAndFlush(buffer);
+                ChannelContext.channelGroup.writeAndFlush(buffer.duplicate());
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -240,7 +243,7 @@ public class HotKeyHandler {
             byte[] compressed = CompressUtil.compress(chunkEnd.toByteArray());
             ByteBuf buffer = allocator.buffer(compressed.length);
             buffer.writeBytes(compressed);
-            ChannelContext.channelGroup.writeAndFlush(buffer);
+            ChannelContext.channelGroup.writeAndFlush(buffer.duplicate());
         } catch (IOException e) {
             e.printStackTrace();
         }
