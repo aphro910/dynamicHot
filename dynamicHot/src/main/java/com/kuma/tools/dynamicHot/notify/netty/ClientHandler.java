@@ -24,7 +24,7 @@ import java.util.concurrent.ConcurrentHashMap;
 // 客户端业务处理器
 @Component
 @ChannelHandler.Sharable
-public class ClientHandler extends SimpleChannelInboundHandler<BinaryWebSocketFrame> {
+public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Autowired
     private HotKeyContext hotKeyContext;
@@ -34,12 +34,12 @@ public class ClientHandler extends SimpleChannelInboundHandler<BinaryWebSocketFr
     private static final Logger log = LoggerFactory.getLogger(ClientHandler.class);
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, BinaryWebSocketFrame msg) {
-        ByteBuf content = msg.content();
-        byte[] bytes = new byte[content.readableBytes()];
-        content.readBytes(bytes); // 读取为 byte[]
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) {
+        byte[] compressedBytes = new byte[msg.readableBytes()];
+        msg.readBytes(compressedBytes);
+
         try {
-            byte[] byteArray = CompressUtil.decompressToByteArray(bytes);
+            byte[] byteArray = CompressUtil.decompressToByteArray(compressedBytes);
             DataModel.HotKeyChunkInfo chunkInfo = DataModel.HotKeyChunkInfo.parseFrom(byteArray);
             if (chunkInfo.getType().equals(Constants.CHUNK_START)) {
                 sessionMap.putIfAbsent(chunkInfo.getSessionId(), new ArrayList<>());

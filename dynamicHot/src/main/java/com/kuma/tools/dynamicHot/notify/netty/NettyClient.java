@@ -5,19 +5,12 @@ import com.kuma.tools.dynamicHot.notify.register.protobuf.DataModel;
 import com.kuma.tools.dynamicHot.utils.CompressUtil;
 import io.netty.bootstrap.Bootstrap;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
 import io.netty.channel.*;
 import io.netty.channel.nio.NioEventLoopGroup;
 import io.netty.channel.socket.SocketChannel;
 import io.netty.channel.socket.nio.NioSocketChannel;
-import io.netty.handler.codec.http.DefaultHttpHeaders;
-import io.netty.handler.codec.http.HttpClientCodec;
-import io.netty.handler.codec.http.HttpObjectAggregator;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
-import io.netty.handler.codec.http.websocketx.WebSocketClientProtocolHandler;
-import io.netty.handler.codec.http.websocketx.WebSocketVersion;
-import io.netty.handler.stream.ChunkedWriteHandler;
-import io.netty.handler.timeout.IdleStateHandler;
+import io.netty.handler.codec.LengthFieldBasedFrameDecoder;
+import io.netty.handler.codec.LengthFieldPrepender;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,22 +61,16 @@ public class NettyClient {
                     @Override
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
-                        pipeline.addLast(new IdleStateHandler(60, 60, 0));
-                        // 1. HTTP 编解码器
-                        pipeline.addLast(new HttpClientCodec());
-                        // 2. 聚合 HTTP 消息
-                        pipeline.addLast(new HttpObjectAggregator(65536));
-                        // 3. 处理大文件/分块传输
-                        pipeline.addLast(new ChunkedWriteHandler());
-                        // 4. WebSocket 协议处理器
-                        pipeline.addLast(new WebSocketClientProtocolHandler(
-                                URI.create("ws://" + host + ":" + port + "/ws"),
-                                WebSocketVersion.V13,
-                                null,
-                                true,
-                                new DefaultHttpHeaders(),
-                                65536
+                        pipeline.addLast(new LengthFieldBasedFrameDecoder(
+                                1024 * 1024,   // maxFrameLength
+                                0,              // lengthFieldOffset
+                                4,              // lengthFieldLength
+                                0,              // lengthAdjustment
+                                4               // initialBytesToStrip
                         ));
+
+                        // 长度字段编码器（添加4字节长度头）
+                        pipeline.addLast(new LengthFieldPrepender(4));
                         // 添加业务处理器
                         pipeline.addLast(clientHandler);
 
@@ -153,11 +140,12 @@ public class NettyClient {
                     .addAllBatchMessage(chunkList)
                     .build();
 
+            // 压缩并发送
             try {
-                // 压缩并发送
                 byte[] compressed = CompressUtil.compress(chunkData.toByteArray());
-                ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
-                channel.writeAndFlush(new BinaryWebSocketFrame(buffer));
+                ByteBuf buffer = channel.alloc().buffer(compressed.length);
+                buffer.writeBytes(compressed);
+                channel.writeAndFlush(buffer);
             } catch (IOException e) {
                 e.printStackTrace();
             }

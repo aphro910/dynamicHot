@@ -10,7 +10,6 @@ import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandler;
 import io.netty.channel.ChannelHandlerContext;
 import io.netty.channel.SimpleChannelInboundHandler;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,7 +20,7 @@ import java.util.List;
 
 @Component
 @ChannelHandler.Sharable
-public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocketFrame> {
+public class WSServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Autowired
     HotKeyHandler hotKeyHandler;
@@ -35,13 +34,12 @@ public class WSServerHandler extends SimpleChannelInboundHandler<BinaryWebSocket
     }
 
     @Override
-    protected void channelRead0(ChannelHandlerContext ctx, BinaryWebSocketFrame msg) {
-        ByteBuf content = msg.content();
+    protected void channelRead0(ChannelHandlerContext ctx, ByteBuf msg) {
         try {
-            byte[] bytes = new byte[content.readableBytes()];
-            content.readBytes(bytes); // 读取为 byte[]
-            byte[] res = CompressUtil.decompressToByteArray(bytes);
-            DataModel.MessageChunkInfo messageChunk = DataModel.MessageChunkInfo.parseFrom(res);
+            byte[] bytes = new byte[msg.readableBytes()];
+            msg.readBytes(bytes); // 读取为 byte[]
+            byte[] decompressed = CompressUtil.decompressToByteArray(bytes);
+            DataModel.MessageChunkInfo messageChunk = DataModel.MessageChunkInfo.parseFrom(decompressed);
             if (messageChunk.getType().equals(Constants.CHUNK_PING)) {
                 return;
             }

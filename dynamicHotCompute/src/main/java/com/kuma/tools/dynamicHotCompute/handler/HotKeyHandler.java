@@ -8,8 +8,7 @@ import com.kuma.tools.dynamicHotCompute.mapper.HotKeyMapper;
 import com.kuma.tools.dynamicHotCompute.protobuf.DataModel;
 import com.kuma.tools.dynamicHotCompute.utils.CompressUtil;
 import io.netty.buffer.ByteBuf;
-import io.netty.buffer.Unpooled;
-import io.netty.handler.codec.http.websocketx.BinaryWebSocketFrame;
+import io.netty.buffer.ByteBufAllocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -185,6 +184,7 @@ public class HotKeyHandler {
         List<String> hotKeyList = hotKeyEntityList.stream().map(HotKeyEntity::getKey).collect(Collectors.toList());
         String sessionId = UUID.randomUUID().toString();
         int totalChunks = (int) Math.ceil((double) hotKeyList.size() / CHUNK_SIZE);
+        ByteBufAllocator allocator = ChannelContext.channelGroup.iterator().next().alloc();
         // 发送开始标记
         DataModel.HotKeyChunkInfo chunkStart = DataModel.HotKeyChunkInfo.newBuilder()
                 .setType(Constants.CHUNK_START)
@@ -194,8 +194,10 @@ public class HotKeyHandler {
 
         try {
             byte[] compressed = CompressUtil.compress(chunkStart.toByteArray());
-            ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
-            ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+
+            ByteBuf buffer = allocator.buffer(compressed.length);
+            buffer.writeBytes(compressed);
+            ChannelContext.channelGroup.writeAndFlush(buffer);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -218,8 +220,10 @@ public class HotKeyHandler {
             try {
                 // 压缩并发送
                 byte[] compressed = CompressUtil.compress(chunkData.toByteArray());
-                ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
-                ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+
+                ByteBuf buffer = allocator.buffer(compressed.length);
+                buffer.writeBytes(compressed);
+                ChannelContext.channelGroup.writeAndFlush(buffer);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -234,8 +238,9 @@ public class HotKeyHandler {
         try {
             // 压缩并发送
             byte[] compressed = CompressUtil.compress(chunkEnd.toByteArray());
-            ByteBuf buffer = Unpooled.wrappedBuffer(compressed);
-            ChannelContext.channelGroup.writeAndFlush(new BinaryWebSocketFrame(buffer));
+            ByteBuf buffer = allocator.buffer(compressed.length);
+            buffer.writeBytes(compressed);
+            ChannelContext.channelGroup.writeAndFlush(buffer);
         } catch (IOException e) {
             e.printStackTrace();
         }
