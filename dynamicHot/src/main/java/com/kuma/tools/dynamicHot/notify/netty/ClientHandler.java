@@ -82,9 +82,9 @@ public class ClientHandler extends SimpleChannelInboundHandler<ByteBuf> {
                         .setType(Constants.CHUNK_PING)
                         .build();
                 byte[] ping = CompressUtil.compress(request.toByteArray());
-                ByteBuf buffer = Unpooled.wrappedBuffer(ping);
-                BinaryWebSocketFrame binaryWebSocketFrame = new BinaryWebSocketFrame(buffer);
-                ctx.writeAndFlush(binaryWebSocketFrame);
+                ByteBuf buffer = ctx.channel().alloc().buffer(ping.length);
+                buffer.writeBytes(ping);
+                ctx.writeAndFlush(buffer);
             } catch (Exception e) {
                 e.printStackTrace();
             }
