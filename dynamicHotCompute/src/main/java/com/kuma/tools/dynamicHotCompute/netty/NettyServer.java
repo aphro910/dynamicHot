@@ -16,15 +16,15 @@ import javax.annotation.PostConstruct;
 import javax.annotation.PreDestroy;
 
 @Component
-public class WSNettyServer {
+public class NettyServer {
 
     @Autowired
-    private WSServerChannelInitialzer serverChannelInitialzer;
+    private ServerChannelInitializer serverChannelInitialzer;
 
     @Value("${spring.server.netty.port:8088}")
     private int port;
 
-    private static final Logger log = LoggerFactory.getLogger(WSNettyServer.class);
+    private static final Logger log = LoggerFactory.getLogger(NettyServer.class);
 
     private EventLoopGroup mainGroup;
     private EventLoopGroup subGroup;

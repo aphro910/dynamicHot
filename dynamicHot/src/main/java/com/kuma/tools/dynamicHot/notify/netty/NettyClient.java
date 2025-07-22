@@ -18,7 +18,6 @@ import org.springframework.stereotype.Component;
 
 import javax.annotation.PreDestroy;
 import java.io.IOException;
-import java.net.URI;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
@@ -62,11 +61,11 @@ public class NettyClient {
                     protected void initChannel(SocketChannel ch) {
                         ChannelPipeline pipeline = ch.pipeline();
                         pipeline.addLast(new LengthFieldBasedFrameDecoder(
-                                1024 * 1024,   // maxFrameLength
-                                0,              // lengthFieldOffset
-                                4,              // lengthFieldLength
-                                0,              // lengthAdjustment
-                                4               // initialBytesToStrip
+                                1024 * 1024,   // 最大帧长度
+                                0,              // 帧长度偏移量
+                                4,              // 帧长度占字节数,4字节
+                                0,              // 读取长度调整值,[4][data]
+                                4               // 移除头部字节数,只保留实际数据
                         ));
 
                         // 长度字段编码器（添加4字节长度头）

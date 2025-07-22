@@ -20,12 +20,12 @@ import java.util.List;
 
 @Component
 @ChannelHandler.Sharable
-public class WSServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
+public class ServerHandler extends SimpleChannelInboundHandler<ByteBuf> {
 
     @Autowired
     HotKeyHandler hotKeyHandler;
 
-    private static final Logger log = LoggerFactory.getLogger(WSServerHandler.class);
+    private static final Logger log = LoggerFactory.getLogger(ServerHandler.class);
 
     @Override
     public void handlerAdded(ChannelHandlerContext ctx) {

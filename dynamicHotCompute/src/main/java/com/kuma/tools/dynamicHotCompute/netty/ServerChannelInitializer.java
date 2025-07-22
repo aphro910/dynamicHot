@@ -9,10 +9,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class WSServerChannelInitialzer extends ChannelInitializer<SocketChannel> {
+public class ServerChannelInitializer extends ChannelInitializer<SocketChannel> {
 
     @Autowired
-    private WSServerHandler wsServerHandler;
+    private ServerHandler serverHandler;
 
     @Override
     protected void initChannel(SocketChannel ch) {
@@ -27,7 +27,7 @@ public class WSServerChannelInitialzer extends ChannelInitializer<SocketChannel>
         //长度字段编码器 (添加4字节长度前缀)
         pipeline.addLast(new LengthFieldPrepender(4));
         // 添加自定义的处理器
-        pipeline.addLast(wsServerHandler);
+        pipeline.addLast(serverHandler);
 
     }
 
